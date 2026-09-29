@@ -12,24 +12,24 @@
 
     <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="max-w-md mx-auto bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-2xl mt-20">
-        <h2 class="text-2xl font-black text-amber-500 mb-6 text-center">🔐 تسجيل الدخول للوحة التحكم</h2>
+        <h2 class="text-2xl font-black text-amber-500 mb-6 text-center">🔐 تسجيل الدخول لوحة التحكم</h2>
         <form onsubmit="checkLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-semibold mb-2">كلمة المرور:</label>
-                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="أدخل كلمة المرور">
+                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="كلمة المرور">
             </div>
-            <button type="submit" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">دخول لوحة التحكم</button>
+            <button type="submit" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">دخول</button>
         </form>
     </div>
 
     <!-- لوحة التحكم الرئيسية -->
     <div id="admin-dashboard" class="max-w-4xl mx-auto space-y-8 hidden">
         <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية السريعة</h2>
+            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية الفورية</h2>
             <a href="index.html" target="_blank" class="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition">عرض الموقع 🌐</a>
         </div>
 
-        <!-- قسم 1: إضافة منتج جديد -->
+        <!-- 1. إضافة منتج جديد -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🍔 إضافة منتج جديد للقائمة</h3>
             <form id="add-item-form" onsubmit="addItem(event)" class="space-y-4">
@@ -53,19 +53,19 @@
                         <input type="number" id="item-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صورة المنتج (اختياري):</label>
-                        <input type="file" id="item-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                        <label class="block text-sm font-semibold mb-1">رابط صورة المنتج (URL):</label>
+                        <input type="url" id="item-image" placeholder="https://imgur.com/... أو أي رابط صورة مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">وصف الصنف:</label>
                     <textarea id="item-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
                 </div>
-                <button type="submit" id="btn-item" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">إضافة المنتج ونشره فوراً</button>
+                <button type="submit" id="btn-item" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">إضافة ونشر المنتج فوراً</button>
             </form>
         </div>
 
-        <!-- قسم 2: إدارة العروض -->
+        <!-- 2. إضافة عرض جديد -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد وتحديد وقت انتهائه</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
@@ -81,8 +81,8 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صورة العرض (اختياري):</label>
-                        <input type="file" id="offer-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                        <label class="block text-sm font-semibold mb-1">رابط صورة العرض (URL):</label>
+                        <input type="url" id="offer-image" placeholder="https://imgur.com/... أو رابط مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
@@ -93,14 +93,55 @@
                     <label class="block text-sm font-semibold mb-1">وصف العرض:</label>
                     <textarea id="offer-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
                 </div>
-                <button type="submit" id="btn-offer" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-500 transition">تفعيل العرض ونشره فوراً</button>
+                <button type="submit" id="btn-offer" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-500 transition">تفعيل ونشر العرض فوراً</button>
+            </form>
+        </div>
+
+        <!-- 3. التحكم الشامل في العناوين، الألوان والخطوط -->
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل في الهوية والخطوط والألوان</h3>
+            <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">اسم المطعم (العلامة التجارية):</label>
+                        <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">نوع الخط:</label>
+                        <select id="set-font" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                            <option value="Cairo">خط كايرو (Cairo)</option>
+                            <option value="Tajawal">خط تجوال (Tajawal)</option>
+                            <option value="Amiri">خط أميري (Amiri)</option>
+                            <option value="Readex Pro">خط رادكس (Readex Pro)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">لون خلفية الموقع:</label>
+                        <input type="color" id="set-bgcolor" value="#09090b" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">لون النصوص:</label>
+                        <input type="color" id="set-textcolor" value="#ffffff" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي في الواجهة:</label>
+                    <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة، طازجة، ومشوية عالفحم!">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي بالواجهة:</label>
+                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا، البروست، والمشاوي المصنوعة بجودة عالية.</textarea>
+                </div>
+                <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
             </form>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -113,7 +154,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const ADMIN_PASS = "Ahmed123"; // كلمة المرور الصحيحة والمدققة
+        const ADMIN_PASS = "Ahmed123";
 
         window.checkLogin = function(event) {
             event.preventDefault();
@@ -126,78 +167,70 @@
             }
         }
 
-        // دالة ضغط الصور لتطير في أجزاء من الثانية
-        function compressImage(file) {
-            return new Promise((resolve) => {
-                if (!file) { resolve(""); return; }
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 400;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
-            });
-        }
-
         window.addItem = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-item');
-            btn.innerText = "جاري النشر الفوري...";
-            
+            btn.innerText = "جاري النشر...";
             try {
-                const fileInput = document.getElementById('item-image-file');
-                let imageUrl = await compressImage(fileInput.files[0]);
-
                 await addDoc(collection(db, "menu_items"), {
                     name: document.getElementById('item-name').value,
                     category: document.getElementById('item-category').value,
                     price: document.getElementById('item-price').value,
-                    image: imageUrl,
+                    image: document.getElementById('item-image').value,
                     desc: document.getElementById('item-desc').value,
                     createdAt: new Date()
                 });
-                alert('✅ تم إضافة المنتج ونشره في نفس الثانية!');
+                alert('✅ تم نشر المنتج في نفس الثانية!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
-                alert('حدث خطأ: ' + e.message);
+                alert('خطأ: ' + e.message);
             } finally {
-                btn.innerText = "إضافة المنتج ونشره فوراً";
+                btn.innerText = "إضافة ونشر المنتج فوراً";
             }
         }
 
         window.addOffer = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-offer');
-            btn.innerText = "جاري نشر العرض...";
-            
+            btn.innerText = "جاري النشر...";
             try {
-                const fileInput = document.getElementById('offer-image-file');
-                let imageUrl = await compressImage(fileInput.files[0]);
-
                 await addDoc(collection(db, "offers"), {
                     title: document.getElementById('offer-title').value,
                     price: document.getElementById('offer-price').value,
-                    image: imageUrl,
+                    image: document.getElementById('offer-image').value,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
                     createdAt: new Date()
                 });
-                alert('🔥 تم نشر العرض وتفعيله فوراً!');
+                alert('🔥 تم نشر العرض وتفعيله في نفس الثانية!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
-                alert('حدث خطأ: ' + e.message);
+                alert('خطأ: ' + e.message);
+            } catch(e) {
+                alert('خطأ: ' + e.message);
             } finally {
-                btn.innerText = "تفعيل العرض ونشره فوراً";
+                btn.innerText = "تفعيل ونشر العرض فوراً";
+            }
+        }
+
+        window.updateSettings = async function(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-settings');
+            btn.innerText = "جاري الحفظ...";
+            try {
+                await setDoc(doc(db, "settings", "main"), {
+                    brandName: document.getElementById('set-brand').value,
+                    heroTitle: document.getElementById('set-title').value,
+                    heroDesc: document.getElementById('set-desc').value,
+                    fontFamily: document.getElementById('set-font').value,
+                    bgColor: document.getElementById('set-bgcolor').value,
+                    textColor: document.getElementById('set-textcolor').value
+                });
+                alert('✅ تم تحديث تصميم وإعدادات الموقع فوراً!');
+            } catch(e) {
+                alert('خطأ: ' + e.message);
+            } finally {
+                btn.innerText = "حفظ وتطبيق التعديلات فوراً";
             }
         }
     </script>
