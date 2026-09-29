@@ -16,7 +16,6 @@
         <form onsubmit="checkLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-semibold mb-2">كلمة المرور:</label>
-                <!-- تم جعل الحقل مخفياً (Password) -->
                 <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="••••">
             </div>
             <button type="submit" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">دخول</button>
@@ -26,7 +25,7 @@
     <!-- لوحة التحكم الرئيسية -->
     <div id="admin-dashboard" class="max-w-4xl mx-auto space-y-8 hidden">
         <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية الفورية</h2>
+            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية المتكاملة</h2>
             <a href="index.html" target="_blank" class="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition">عرض الموقع 🌐</a>
         </div>
 
@@ -52,11 +51,11 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">السعر (حرية الكتابة ر.س / ج.م):</label>
-                        <input type="text" id="item-price" required placeholder="مثال: 100 ر.س أو 150 ج.م" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">السعر:</label>
+                        <input type="text" id="item-price" required placeholder="مثال: 100 ر.س" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صور المنتج (اختر صورة أو عدة صور):</label>
+                        <label class="block text-sm font-semibold mb-1">صور المنتج (صورة أو عدة صور):</label>
                         <input type="file" id="item-images-file" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                 </div>
@@ -68,9 +67,9 @@
             </form>
         </div>
 
-        <!-- 2. إضافة عرض جديد مع دعم عدة صور -->
+        <!-- 2. إضافة عرض جديد -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد (يدعم عدة صور وتوقيت)</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة إعلان أو عرض جديد</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -79,7 +78,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">سعر العرض:</label>
-                        <input type="text" id="offer-price" required placeholder="مثال: 50 ر.س أو 80 ج.م" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <input type="text" id="offer-price" required placeholder="مثال: 50 ر.س" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -100,7 +99,18 @@
             </form>
         </div>
 
-        <!-- 3. التحكم الشامل (رقم خدمة التوصيل، الهوية، الألوان والخطوط) -->
+        <!-- 3. قسم إدارة وعرض وتعديل الإعلانات المنشورة (مع نظام "عرض المزيد" عند تجاوز 5 إعلانات) -->
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+            <h3 class="text-xl font-bold text-amber-400 mb-4">📋 إدارة الإعلانات والعروض المنشورة</h3>
+            <div id="admin-offers-list" class="space-y-4">
+                <p class="text-zinc-500 text-center">جاري تحميل الإعلانات...</p>
+            </div>
+            <div id="offers-toggle-container" class="text-center mt-4 hidden">
+                <button onclick="toggleShowAllOffers()" id="toggle-offers-btn" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold px-6 py-2 rounded-xl transition text-sm">عرض المزيد (المزيد من الإعلانات)</button>
+            </div>
+        </div>
+
+        <!-- 4. التحكم الشامل -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل ورقم خدمة التوصيل</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
@@ -110,47 +120,52 @@
                         <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل (بدون علامة +):</label>
-                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
+                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل:</label>
+                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700">
                     </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">نوع الخط:</label>
-                        <select id="set-font" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
-                            <option value="Cairo">خط كايرو (Cairo)</option>
-                            <option value="Tajawal">خط تجوال (Tajawal)</option>
-                            <option value="Amiri">خط أميري (Amiri)</option>
-                            <option value="Readex Pro">خط رادكس (Readex Pro)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">لون خلفية الموقع:</label>
-                        <input type="color" id="set-bgcolor" value="#09090b" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">لون النصوص:</label>
-                        <input type="color" id="set-textcolor" value="#ffffff" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
-                        <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة طازجة ومشوية عالفحم">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي:</label>
-                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا والبروست والمشاوي والكريب المصنوعة بجودة عالية.</textarea>
                 </div>
                 <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
             </form>
         </div>
     </div>
 
+    <!-- نافذة منبثقة (Modal) لتعديل العرض أو الإعلان -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-700 max-w-lg w-full p-6 rounded-2xl relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل الإعلان أو العرض</h3>
+            <form id="edit-offer-form" onsubmit="saveEditedOffer(event)" class="space-y-4">
+                <input type="hidden" id="edit-offer-id">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">عنوان العرض:</label>
+                    <input type="text" id="edit-offer-title" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">سعر العرض:</label>
+                    <input type="text" id="edit-offer-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">تحديث صور الإعلان (اختياري - اتركها فارغة للاحتفاظ بالصور القديمة):</label>
+                    <input type="file" id="edit-offer-images" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
+                    <input type="datetime-local" id="edit-offer-time" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">وصف العرض:</label>
+                    <textarea id="edit-offer-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">حفظ التعديلات</button>
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -166,12 +181,16 @@
         const db = getDatabase(app);
         const ADMIN_PASS = "1234";
 
+        let cachedOffers = {};
+        let showAllOffersFlag = false;
+
         window.checkLogin = function(event) {
             event.preventDefault();
             const pass = document.getElementById('admin-pass').value;
             if(pass === ADMIN_PASS) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
+                loadAdminOffers();
             } else {
                 alert('كلمة المرور غير صحيحة! (استخدم 1234)');
             }
@@ -191,18 +210,15 @@
             event.preventDefault();
             const btn = document.getElementById('btn-item');
             btn.innerText = "جاري النشر الفوري...";
-            
             try {
                 const fileInput = document.getElementById('item-images-file');
                 let imageUrls = [];
-                
                 if (fileInput.files.length > 0) {
                     for (let i = 0; i < fileInput.files.length; i++) {
                         let base64Img = await readFileAsBase64(fileInput.files[i]);
                         if(base64Img) imageUrls.push(base64Img);
                     }
                 }
-
                 const newRef = push(ref(db, 'menu_items'));
                 await set(newRef, {
                     name: document.getElementById('item-name').value,
@@ -212,11 +228,10 @@
                     desc: document.getElementById('item-desc').value,
                     createdAt: Date.now()
                 });
-
-                alert('✅ تم نشر المنتج وصوره في نفس الثانية!');
+                alert('✅ تم نشر المنتج وصوره بنجاح!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
-                alert('خطأ أثناء النشر: ' + e.message);
+                alert('خطأ: ' + e.message);
             } finally {
                 btn.innerText = "إضافة ونشر المنتج فوراً";
             }
@@ -226,18 +241,15 @@
             event.preventDefault();
             const btn = document.getElementById('btn-offer');
             btn.innerText = "جاري نشر العرض...";
-            
             try {
                 const fileInput = document.getElementById('offer-images-file');
                 let imageUrls = [];
-                
                 if (fileInput.files.length > 0) {
                     for (let i = 0; i < fileInput.files.length; i++) {
                         let base64Img = await readFileAsBase64(fileInput.files[i]);
                         if(base64Img) imageUrls.push(base64Img);
                     }
                 }
-
                 const newRef = push(ref(db, 'offers'));
                 await set(newRef, {
                     title: document.getElementById('offer-title').value,
@@ -247,35 +259,134 @@
                     desc: document.getElementById('offer-desc').value,
                     createdAt: Date.now()
                 });
-
-                alert('🔥 تم نشر العرض وتفعيله فوراً!');
+                alert('🔥 تم نشر العرض وتفعيله بنجاح!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
-                alert('خطأ أثناء النشر: ' + e.message);
+                alert('خطأ: ' + e.message);
             } finally {
                 btn.innerText = "تفعيل ونشر العرض فوراً";
             }
         }
 
+        // تحميل وعرض الإعلانات المنشورة في لوحة التحكم مع نظام (عرض المزيد عند تجاوز 5 إعلانات)
+        function loadAdminOffers() {
+            onValue(ref(db, 'offers'), (snapshot) => {
+                const container = document.getElementById('admin-offers-list');
+                const toggleContainer = document.getElementById('offers-toggle-container');
+                container.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    container.innerHTML = `<p class="text-zinc-500 text-center py-4">لا توجد إعلانات أو عروض منشورة حالياً.</p>`;
+                    toggleContainer.style.display = 'none';
+                    return;
+                }
+
+                cachedOffers = data;
+                const keys = Object.keys(data).reverse(); // أحدث الإعلانات أولاً
+                const displayKeys = showAllOffersFlag ? keys : keys.slice(0, 5);
+
+                displayKeys.forEach(key => {
+                    const offer = data[key];
+                    const imgThumb = (offer.images && offer.images.length > 0) ? offer.images[0] : '';
+                    
+                    container.innerHTML += `
+                        <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-xl flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                ${imgThumb ? `<img src="${imgThumb}" class="w-12 h-12 object-cover rounded-lg border border-zinc-700">` : '<div class="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center text-xs">بدون</div>'}
+                                <div>
+                                    <h4 class="font-bold text-amber-400 text-sm">${offer.title}</h4>
+                                    <span class="text-xs text-zinc-400">السعر: ${offer.price} | ينتهي: ${offer.endTime.replace('T', ' ')}</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openEditModal('${key}')" class="bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-zinc-950 px-3 py-1.5 rounded-lg text-xs font-bold transition">✏️ تعديل</button>
+                                <button onclick="deleteOffer('${key}')" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">🗑️ حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (keys.length > 5) {
+                    toggleContainer.style.display = 'block';
+                    document.getElementById('toggle-offers-btn').innerText = showAllOffersFlag ? 'إخفاء (عرض 5 فقط)' : `عرض المزيد (${keys.length - 5} إعلانات إضافية)`;
+                } else {
+                    toggleContainer.style.display = 'none';
+                }
+            });
+        }
+
+        window.toggleShowAllOffers = function() {
+            showAllOffersFlag = !showAllOffersFlag;
+            loadAdminOffers();
+        }
+
+        window.openEditModal = function(id) {
+            const offer = cachedOffers[id];
+            if (!offer) return;
+            document.getElementById('edit-offer-id').value = id;
+            document.getElementById('edit-offer-title').value = offer.title;
+            document.getElementById('edit-offer-price').value = offer.price;
+            document.getElementById('edit-offer-time').value = offer.endTime;
+            document.getElementById('edit-offer-desc').value = offer.desc || '';
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        window.closeEditModal = function() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        window.saveEditedOffer = async function(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-offer-id').value;
+            const fileInput = document.getElementById('edit-offer-images');
+            
+            try {
+                let updatedData = {
+                    title: document.getElementById('edit-offer-title').value,
+                    price: document.getElementById('edit-offer-price').value,
+                    endTime: document.getElementById('edit-offer-time').value,
+                    desc: document.getElementById('edit-offer-desc').value
+                };
+
+                if (fileInput.files.length > 0) {
+                    let newImages = [];
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        let base64Img = await readFileAsBase64(fileInput.files[i]);
+                        if(base64Img) newImages.push(base64Img);
+                    }
+                    updatedData.images = newImages;
+                }
+
+                await update(ref(db, `offers/${id}`), updatedData);
+                alert('✅ تم تحديث الإعلان بنجاح!');
+                closeEditModal();
+            } catch(e) {
+                alert('خطأ أثناء التحديث: ' + e.message);
+            }
+        }
+
+        window.deleteOffer = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الإعلان نهائياً؟')) {
+                try {
+                    await remove(ref(db, `offers/${id}`));
+                    alert('🗑️️ تم الحذف بنجاح.');
+                } catch(e) {
+                    alert('خطأ أثناء الحذف: ' + e.message);
+                }
+            }
+        }
+
         window.updateSettings = async function(event) {
             event.preventDefault();
-            const btn = document.getElementById('btn-settings');
-            btn.innerText = "جاري الحفظ والتطبيق...";
             try {
                 await set(ref(db, 'settings'), {
                     brandName: document.getElementById('set-brand').value,
-                    deliveryPhone: document.getElementById('set-delivery-phone').value,
-                    heroTitle: document.getElementById('set-title').value,
-                    heroDesc: document.getElementById('set-desc').value,
-                    fontFamily: document.getElementById('set-font').value,
-                    bgColor: document.getElementById('set-bgcolor').value,
-                    textColor: document.getElementById('set-textcolor').value
+                    deliveryPhone: document.getElementById('set-delivery-phone').value
                 });
-                alert('✅ تم تطبيق التعديلات وتحديث الموقع فوراً!');
+                alert('✅ تم تطبيق إعدادات المتجر والتوصيل فوراً!');
             } catch(e) {
                 alert('خطأ: ' + e.message);
-            } finally {
-                btn.innerText = "حفظ وتطبيق التعديلات فوراً";
             }
         }
     </script>
