@@ -51,8 +51,8 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">السعر:</label>
-                        <input type="text" id="item-price" required placeholder="مثال: 100 ر.س" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">السعر (اختياري):</label>
+                        <input type="text" id="item-price" placeholder="مثال: 100 ر.س (اختياري)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">صور المنتج (صورة أو عدة صور):</label>
@@ -67,7 +67,15 @@
             </form>
         </div>
 
-        <!-- 2. إضافة عرض جديد -->
+        <!-- 2. إدارة المنتجات والأصناف المنشورة (حذف فوري وتعديل كامل) -->
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+            <h3 class="text-xl font-bold text-amber-400 mb-4">📋 إدارة الأصناف والمنتجات المنشورة</h3>
+            <div id="admin-items-list" class="space-y-4">
+                <p class="text-zinc-500 text-center">جاري تحميل المنتجات...</p>
+            </div>
+        </div>
+
+        <!-- 3. إضافة عرض جديد (قسم العروض كما هو) -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة إعلان أو عرض جديد</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
@@ -99,7 +107,7 @@
             </form>
         </div>
 
-        <!-- 3. إدارة الإعلانات المنشورة -->
+        <!-- 4. إدارة الإعلانات المنشورة -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">📋 إدارة الإعلانات والعروض المنشورة</h3>
             <div id="admin-offers-list" class="space-y-4">
@@ -110,7 +118,7 @@
             </div>
         </div>
 
-        <!-- 4. التحكم الشامل الكامل في الصفحة الرئيسية والهوية والألوان والخطوط والأرقام -->
+        <!-- 5. التحكم الشامل -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل بالصفحة الرئيسية والهوية والأرقام</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
@@ -162,7 +170,51 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل الإعلان -->
+    <!-- نافذة تعديل المنتج أو الصنف -->
+    <div id="edit-item-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-700 max-w-lg w-full p-6 rounded-2xl relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل المنتج أو الصنف</h3>
+            <form id="edit-item-form" onsubmit="saveEditedItem(event)" class="space-y-4">
+                <input type="hidden" id="edit-item-id">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">اسم الصنف:</label>
+                    <input type="text" id="edit-item-name" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">القسم:</label>
+                    <select id="edit-item-category" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <option value="pizza">بيتزا</option>
+                        <option value="broast">بروست</option>
+                        <option value="grills">مشاوي</option>
+                        <option value="crepe">🌮 الكريب</option>
+                        <option value="family">الوجبات العائلية</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">السعر (اختياري):</label>
+                    <input type="text" id="edit-item-price" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">صور المنتج الحالية (اضغط ❌ لحذف أي صورة):</label>
+                    <div id="current-item-images-container" class="flex gap-2 flex-wrap bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-2"></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">إضافة صور جديدة:</label>
+                    <input type="file" id="edit-item-new-images" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">وصف الصنف:</label>
+                    <textarea id="edit-item-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">حفظ التعديلات</button>
+                    <button type="button" onclick="closeEditItemModal()" class="flex-1 bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل العرض -->
     <div id="edit-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-700 max-w-lg w-full p-6 rounded-2xl relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل الإعلان أو العرض (حذف أو إضافة صور)</h3>
@@ -218,7 +270,9 @@
         const db = getDatabase(app);
         const ADMIN_PASS = "1234";
 
+        let cachedItems = {};
         let cachedOffers = {};
+        let editingItemImages = [];
         let editingOfferImages = [];
         let showAllOffersFlag = false;
 
@@ -228,6 +282,7 @@
             if(pass === ADMIN_PASS) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
+                loadAdminItems();
                 loadAdminOffers();
                 loadSettingsToForm();
             } else {
@@ -262,12 +317,12 @@
                 await set(newRef, {
                     name: document.getElementById('item-name').value,
                     category: document.getElementById('item-category').value,
-                    price: document.getElementById('item-price').value,
+                    price: document.getElementById('item-price').value || '',
                     images: imageUrls,
                     desc: document.getElementById('item-desc').value,
                     createdAt: Date.now()
                 });
-                alert('✅ تم نشر المنتج وصوره بنجاح!');
+                alert('✅ تم نشر المنتج وصوره في نفس الثانية!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
                 alert('خطأ: ' + e.message);
@@ -298,7 +353,7 @@
                     desc: document.getElementById('offer-desc').value,
                     createdAt: Date.now()
                 });
-                alert('🔥 تم نشر العرض وتفعيله بنجاح!');
+                alert('🔥 تم نشر العرض وتفعيله في نفس الثانية!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
                 alert('خطأ: ' + e.message);
@@ -307,19 +362,49 @@
             }
         }
 
+        function loadAdminItems() {
+            onValue(ref(db, 'menu_items'), (snapshot) => {
+                const container = document.getElementById('admin-items-list');
+                container.innerHTML = '';
+                const data = snapshot.val();
+                if (!data) {
+                    container.innerHTML = `<p class="text-zinc-500 text-center py-4">لا توجد منتجات منشورة حالياً.</p>`;
+                    return;
+                }
+                cachedItems = data;
+                Object.keys(data).reverse().forEach(key => {
+                    const item = data[key];
+                    const imgThumb = (item.images && item.images.length > 0) ? item.images[0] : '';
+                    container.innerHTML += `
+                        <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-xl flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                ${imgThumb ? `<img src="${imgThumb}" class="w-12 h-12 object-cover rounded-lg border border-zinc-700">` : '<div class="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center text-xs">بدون</div>'}
+                                <div>
+                                    <h4 class="font-bold text-amber-400 text-sm">${item.name}</h4>
+                                    <span class="text-xs text-zinc-400">القسم: ${item.category} | السعر: ${item.price || 'غير محدد'}</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openEditItemModal('${key}')" class="bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-zinc-950 px-3 py-1.5 rounded-lg text-xs font-bold transition">✏️ تعديل</button>
+                                <button onclick="deleteItem('${key}')" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">🗑️ حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
         function loadAdminOffers() {
             onValue(ref(db, 'offers'), (snapshot) => {
                 const container = document.getElementById('admin-offers-list');
                 const toggleContainer = document.getElementById('offers-toggle-container');
                 container.innerHTML = '';
                 const data = snapshot.val();
-                
                 if (!data) {
                     container.innerHTML = `<p class="text-zinc-500 text-center py-4">لا توجد إعلانات أو عروض منشورة حالياً.</p>`;
                     toggleContainer.style.display = 'none';
                     return;
                 }
-
                 cachedOffers = data;
                 const keys = Object.keys(data).reverse();
                 const displayKeys = showAllOffersFlag ? keys : keys.slice(0, 5);
@@ -327,7 +412,6 @@
                 displayKeys.forEach(key => {
                     const offer = data[key];
                     const imgThumb = (offer.images && offer.images.length > 0) ? offer.images[0] : '';
-                    
                     container.innerHTML += `
                         <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-xl flex items-center justify-between gap-4">
                             <div class="flex items-center gap-3">
@@ -354,25 +438,90 @@
             });
         }
 
-        function loadSettingsToForm() {
-            onValue(ref(db, 'settings'), (snapshot) => {
-                const s = snapshot.val();
-                if (s) {
-                    if(s.brandName) document.getElementById('set-brand').value = s.brandName;
-                    if(s.heroTitle) document.getElementById('set-title').value = s.heroTitle;
-                    if(s.heroDesc) document.getElementById('set-desc').value = s.heroDesc;
-                    if(s.fontFamily) document.getElementById('set-font').value = s.fontFamily;
-                    if(s.bgColor) document.getElementById('set-bgcolor').value = s.bgColor;
-                    if(s.textColor) document.getElementById('set-textcolor').value = s.textColor;
-                    if(s.orderPhone) document.getElementById('set-order-phone').value = s.orderPhone;
-                    if(s.deliveryPhone) document.getElementById('set-delivery-phone').value = s.deliveryPhone;
+        window.deleteItem = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) {
+                try {
+                    await remove(ref(db, `menu_items/${id}`));
+                    alert('🗑 تم حذف المنتج بنجاح واختفى من الصفحة الرئيسية في نفس الثانية.');
+                } catch(e) {
+                    alert('خطأ أثناء الحذف: ' + e.message);
                 }
-            }, { onlyOnce: true });
+            }
         }
 
-        window.toggleShowAllOffers = function() {
-            showAllOffersFlag = !showAllOffersFlag;
-            loadAdminOffers();
+        window.deleteOffer = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الإعلان نهائياً؟')) {
+                try {
+                    await remove(ref(db, `offers/${id}`));
+                    alert('🗑 تم الحذف بنجاح.');
+                } catch(e) {
+                    alert('خطأ أثناء الحذف: ' + e.message);
+                }
+            }
+        }
+
+        window.openEditItemModal = function(id) {
+            const item = cachedItems[id];
+            if (!item) return;
+            document.getElementById('edit-item-id').value = id;
+            document.getElementById('edit-item-name').value = item.name;
+            document.getElementById('edit-item-category').value = item.category;
+            document.getElementById('edit-item-price').value = item.price || '';
+            document.getElementById('edit-item-desc').value = item.desc || '';
+            editingItemImages = item.images ? [...item.images] : [];
+            renderEditItemImages();
+            document.getElementById('edit-item-modal').style.display = 'flex';
+        }
+
+        function renderEditItemImages() {
+            const container = document.getElementById('current-item-images-container');
+            container.innerHTML = '';
+            if (editingItemImages.length === 0) {
+                container.innerHTML = `<span class="text-zinc-500 text-xs">لا توجد صور حالية. أضف صور جديدة أدناه.</span>`;
+                return;
+            }
+            editingItemImages.forEach((imgUrl, index) => {
+                container.innerHTML += `
+                    <div class="relative w-16 h-16 border border-zinc-700 rounded-lg overflow-hidden group bg-black">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        <button type="button" onclick="removeEditItemImage(${index})" class="absolute top-0 right-0 bg-red-600 text-white w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded-bl hover:bg-red-500">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.removeEditItemImage = function(index) {
+            editingItemImages.splice(index, 1);
+            renderEditItemImages();
+        }
+
+        window.closeEditItemModal = function() {
+            document.getElementById('edit-item-modal').style.display = 'none';
+        }
+
+        window.saveEditedItem = async function(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-item-id').value;
+            const fileInput = document.getElementById('edit-item-new-images');
+            try {
+                if (fileInput.files.length > 0) {
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        let base64Img = await readFileAsBase64(fileInput.files[i]);
+                        if(base64Img) editingItemImages.push(base64Img);
+                    }
+                }
+                await update(ref(db, `menu_items/${id}`), {
+                    name: document.getElementById('edit-item-name').value,
+                    category: document.getElementById('edit-item-category').value,
+                    price: document.getElementById('edit-item-price').value || '',
+                    images: editingItemImages,
+                    desc: document.getElementById('edit-item-desc').value
+                });
+                alert('✅ تم تحديث المنتج بنجاح!');
+                closeEditItemModal();
+            } catch(e) {
+                alert('خطأ: ' + e.message);
+            }
         }
 
         window.openEditModal = function(id) {
@@ -383,7 +532,6 @@
             document.getElementById('edit-offer-price').value = offer.price;
             document.getElementById('edit-offer-time').value = offer.endTime;
             document.getElementById('edit-offer-desc').value = offer.desc || '';
-            
             editingOfferImages = offer.images ? [...offer.images] : [];
             renderCurrentEditImages();
             document.getElementById('edit-modal').style.display = 'flex';
@@ -419,7 +567,6 @@
             event.preventDefault();
             const id = document.getElementById('edit-offer-id').value;
             const fileInput = document.getElementById('edit-offer-images');
-            
             try {
                 if (fileInput.files.length > 0) {
                     for (let i = 0; i < fileInput.files.length; i++) {
@@ -427,16 +574,13 @@
                         if(base64Img) editingOfferImages.push(base64Img);
                     }
                 }
-
-                let updatedData = {
+                await update(ref(db, `offers/${id}`), {
                     title: document.getElementById('edit-offer-title').value,
                     price: document.getElementById('edit-offer-price').value,
                     images: editingOfferImages,
                     endTime: document.getElementById('edit-offer-time').value,
                     desc: document.getElementById('edit-offer-desc').value
-                };
-
-                await update(ref(db, `offers/${id}`), updatedData);
+                });
                 alert('✅ تم تحديث الإعلان والصور بنجاح!');
                 closeEditModal();
             } catch(e) {
@@ -444,15 +588,20 @@
             }
         }
 
-        window.deleteOffer = async function(id) {
-            if (confirm('هل أنت متأكد من حذف هذا الإعلان نهائياً؟')) {
-                try {
-                    await remove(ref(db, `offers/${id}`));
-                    alert('🗑 تم الحذف بنجاح.');
-                } catch(e) {
-                    alert('خطأ أثناء الحذف: ' + e.message);
+        function loadSettingsToForm() {
+            onValue(ref(db, 'settings'), (snapshot) => {
+                const s = snapshot.val();
+                if (s) {
+                    if(s.brandName) document.getElementById('set-brand').value = s.brandName;
+                    if(s.heroTitle) document.getElementById('set-title').value = s.heroTitle;
+                    if(s.heroDesc) document.getElementById('set-desc').value = s.heroDesc;
+                    if(s.fontFamily) document.getElementById('set-font').value = s.fontFamily;
+                    if(s.bgColor) document.getElementById('set-bgcolor').value = s.bgColor;
+                    if(s.textColor) document.getElementById('set-textcolor').value = s.textColor;
+                    if(s.orderPhone) document.getElementById('set-order-phone').value = s.orderPhone;
+                    if(s.deliveryPhone) document.getElementById('set-delivery-phone').value = s.deliveryPhone;
                 }
-            }
+            }, { onlyOnce: true });
         }
 
         window.updateSettings = async function(event) {
