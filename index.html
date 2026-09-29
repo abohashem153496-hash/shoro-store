@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHORO شورو - بيتزا، بروست، ومشاوي</title>
+    <title id="page-browser-title">SHORO شورو - بيتزا، بروست، ومشاوي</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <style id="custom-styles"> body { font-family: 'Cairo', sans-serif; } </style>
+    <link id="font-link" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style id="custom-dynamic-styles">
+        body { font-family: 'Cairo', sans-serif; background-color: #09090b; color: #ffffff; }
+    </style>
 </head>
-<body id="page-body" class="bg-zinc-950 text-white">
+<body id="main-body-tag">
 
-    <header class="flex justify-between items-center px-8 py-6 border-b border-zinc-800">
+    <header id="site-header" class="flex justify-between items-center px-8 py-6 border-b border-zinc-800 bg-zinc-950">
         <div id="brand-title" class="text-2xl font-black text-amber-500 tracking-wider">SHORO شورو</div>
         <nav class="hidden md:flex gap-8 text-sm font-semibold">
             <a href="#home" class="hover:text-amber-500 transition">الرئيسية</a>
@@ -20,7 +22,7 @@
         <a href="#menu" class="bg-amber-500 text-zinc-950 px-6 py-2 rounded-full font-bold hover:bg-amber-400 transition">اطلب الآن</a>
     </header>
 
-    <section id="home" class="relative min-h-[70vh] flex items-center justify-between px-8 md:px-20 bg-gradient-to-r from-red-950 via-zinc-900 to-zinc-950">
+    <section id="home-hero-section" class="relative min-h-[70vh] flex items-center justify-between px-8 md:px-20 bg-gradient-to-r from-red-950 via-zinc-900 to-zinc-950">
         <div class="max-w-xl z-10">
             <span class="bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">🔥 طعم لا يقاوم</span>
             <h1 id="hero-title" class="text-4xl md:text-6xl font-black mt-6 mb-8 leading-relaxed">قرمشة، طازجة، ومشوية عالفحم!</h1>
@@ -59,7 +61,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -113,13 +115,20 @@
             renderOffers();
         });
 
-        onSnapshot(collection(db, "settings"), (snapshot) => {
-            snapshot.forEach((doc) => {
-                const s = doc.data();
+        // الاستماع الفوري لإعدادات التصميم والعنوان واللون
+        onSnapshot(doc(db, "settings", "main"), (docSnap) => {
+            if (docSnap.exists()) {
+                const s = docSnap.data();
                 if(s.heroTitle) document.getElementById('hero-title').innerText = s.heroTitle;
                 if(s.heroDesc) document.getElementById('hero-desc').innerText = s.heroDesc;
                 if(s.brandName) document.getElementById('brand-title').innerText = s.brandName;
-            });
+                if(s.bgColor) document.getElementById('main-body-tag').style.backgroundColor = s.bgColor;
+                if(s.textColor) document.getElementById('main-body-tag').style.color = s.textColor;
+                if(s.fontFamily) {
+                    document.getElementById('font-link').href = `https://fonts.googleapis.com/css2?family=${s.fontFamily}:wght@400;700;900&display=swap`;
+                    document.getElementById('custom-dynamic-styles').innerText = `body { font-family: '${s.fontFamily}', sans-serif; background-color: ${s.bgColor || '#09090b'}; color: ${s.textColor || '#ffffff'}; }`;
+                }
+            }
         });
 
         function renderMenu() {
