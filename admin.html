@@ -99,7 +99,7 @@
             </form>
         </div>
 
-        <!-- 3. قسم إدارة وعرض وتعديل الإعلانات المنشورة (مع نظام "عرض المزيد" عند تجاوز 5 إعلانات) -->
+        <!-- 3. إدارة الإعلانات المنشورة -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">📋 إدارة الإعلانات والعروض المنشورة</h3>
             <div id="admin-offers-list" class="space-y-4">
@@ -110,9 +110,9 @@
             </div>
         </div>
 
-        <!-- 4. التحكم الشامل -->
+        <!-- 4. التحكم الشامل (أرقام التواصل والتوصيل) -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل ورقم خدمة التوصيل</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل وأرقام التواصل والطلبات</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -120,8 +120,14 @@
                         <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل:</label>
-                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700">
+                        <label class="block text-sm font-semibold mb-1">رقم الطلبات الرئيسي (واتساب):</label>
+                        <input type="text" id="set-order-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل (الزر الدائري):</label>
+                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
                     </div>
                 </div>
                 <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
@@ -129,10 +135,10 @@
         </div>
     </div>
 
-    <!-- نافذة منبثقة (Modal) لتعديل العرض أو الإعلان -->
+    <!-- نافذة تعديل الإعلان (مع إمكانية حذف الصور الحالية وإضافة صور جديدة) -->
     <div id="edit-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-700 max-w-lg w-full p-6 rounded-2xl relative shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل الإعلان أو العرض</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل الإعلان أو العرض (حذف أو إضافة صور)</h3>
             <form id="edit-offer-form" onsubmit="saveEditedOffer(event)" class="space-y-4">
                 <input type="hidden" id="edit-offer-id">
                 <div>
@@ -143,8 +149,17 @@
                     <label class="block text-sm font-semibold mb-1">سعر العرض:</label>
                     <input type="text" id="edit-offer-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                 </div>
+                
+                <!-- عرض الصور الحالية مع خيار الحذف -->
                 <div>
-                    <label class="block text-sm font-semibold mb-1">تحديث صور الإعلان (اختياري - اتركها فارغة للاحتفاظ بالصور القديمة):</label>
+                    <label class="block text-sm font-semibold mb-2">الصور الحالية للإعلان (اضغط ❌ لحذف أي صورة):</label>
+                    <div id="current-images-container" class="flex gap-2 flex-wrap bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-2">
+                        <!-- تظهر الصور برمجياً هنا -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">إضافة صور جديدة للإعلان:</label>
                     <input type="file" id="edit-offer-images" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                 </div>
                 <div>
@@ -182,6 +197,7 @@
         const ADMIN_PASS = "1234";
 
         let cachedOffers = {};
+        let editingOfferImages = [];
         let showAllOffersFlag = false;
 
         window.checkLogin = function(event) {
@@ -268,7 +284,6 @@
             }
         }
 
-        // تحميل وعرض الإعلانات المنشورة في لوحة التحكم مع نظام (عرض المزيد عند تجاوز 5 إعلانات)
         function loadAdminOffers() {
             onValue(ref(db, 'offers'), (snapshot) => {
                 const container = document.getElementById('admin-offers-list');
@@ -283,7 +298,7 @@
                 }
 
                 cachedOffers = data;
-                const keys = Object.keys(data).reverse(); // أحدث الإعلانات أولاً
+                const keys = Object.keys(data).reverse();
                 const displayKeys = showAllOffersFlag ? keys : keys.slice(0, 5);
 
                 displayKeys.forEach(key => {
@@ -329,7 +344,32 @@
             document.getElementById('edit-offer-price').value = offer.price;
             document.getElementById('edit-offer-time').value = offer.endTime;
             document.getElementById('edit-offer-desc').value = offer.desc || '';
+            
+            editingOfferImages = offer.images ? [...offer.images] : [];
+            renderCurrentEditImages();
             document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function renderCurrentEditImages() {
+            const container = document.getElementById('current-images-container');
+            container.innerHTML = '';
+            if (editingOfferImages.length === 0) {
+                container.innerHTML = `<span class="text-zinc-500 text-xs">لا توجد صور حالية. أضف صور جديدة أدناه.</span>`;
+                return;
+            }
+            editingOfferImages.forEach((imgUrl, index) => {
+                container.innerHTML += `
+                    <div class="relative w-16 h-16 border border-zinc-700 rounded-lg overflow-hidden group bg-black">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        <button type="button" onclick="removeEditImage(${index})" class="absolute top-0 right-0 bg-red-600 text-white w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded-bl hover:bg-red-500" title="حذف الصورة">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.removeEditImage = function(index) {
+            editingOfferImages.splice(index, 1);
+            renderCurrentEditImages();
         }
 
         window.closeEditModal = function() {
@@ -342,24 +382,23 @@
             const fileInput = document.getElementById('edit-offer-images');
             
             try {
+                if (fileInput.files.length > 0) {
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        let base64Img = await readFileAsBase64(fileInput.files[i]);
+                        if(base64Img) editingOfferImages.push(base64Img);
+                    }
+                }
+
                 let updatedData = {
                     title: document.getElementById('edit-offer-title').value,
                     price: document.getElementById('edit-offer-price').value,
+                    images: editingOfferImages,
                     endTime: document.getElementById('edit-offer-time').value,
                     desc: document.getElementById('edit-offer-desc').value
                 };
 
-                if (fileInput.files.length > 0) {
-                    let newImages = [];
-                    for (let i = 0; i < fileInput.files.length; i++) {
-                        let base64Img = await readFileAsBase64(fileInput.files[i]);
-                        if(base64Img) newImages.push(base64Img);
-                    }
-                    updatedData.images = newImages;
-                }
-
                 await update(ref(db, `offers/${id}`), updatedData);
-                alert('✅ تم تحديث الإعلان بنجاح!');
+                alert('✅ تم تحديث الإعلان والصور بنجاح!');
                 closeEditModal();
             } catch(e) {
                 alert('خطأ أثناء التحديث: ' + e.message);
@@ -370,7 +409,7 @@
             if (confirm('هل أنت متأكد من حذف هذا الإعلان نهائياً؟')) {
                 try {
                     await remove(ref(db, `offers/${id}`));
-                    alert('🗑️️ تم الحذف بنجاح.');
+                    alert('🗑 تم الحذف بنجاح.');
                 } catch(e) {
                     alert('خطأ أثناء الحذف: ' + e.message);
                 }
@@ -382,9 +421,10 @@
             try {
                 await set(ref(db, 'settings'), {
                     brandName: document.getElementById('set-brand').value,
+                    orderPhone: document.getElementById('set-order-phone').value,
                     deliveryPhone: document.getElementById('set-delivery-phone').value
                 });
-                alert('✅ تم تطبيق إعدادات المتجر والتوصيل فوراً!');
+                alert('✅ تم تحديث أرقام التواصل وإعدادات المتجر فوراً!');
             } catch(e) {
                 alert('خطأ: ' + e.message);
             }
