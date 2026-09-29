@@ -113,11 +113,12 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const ADMIN_PASS = "Ahmed123"; // كلمة المرور الصحيحة والمدققة
 
         window.checkLogin = function(event) {
             event.preventDefault();
             const pass = document.getElementById('admin-pass').value;
-            if(pass === "Ahmed123") {
+            if(pass === ADMIN_PASS) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
             } else {
@@ -125,7 +126,7 @@
             }
         }
 
-        // ضغط حجم الصورة وتصغيرها لتطير في أجزاء من الثانية
+        // دالة ضغط الصور لتطير في أجزاء من الثانية
         function compressImage(file) {
             return new Promise((resolve) => {
                 if (!file) { resolve(""); return; }
@@ -136,13 +137,13 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 400; // تصغير العرض لأقصى سرعة
+                        const MAX_WIDTH = 400;
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // ضغط الجودة لترفع فوراً
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
             });
@@ -185,7 +186,7 @@
 
                 await addDoc(collection(db, "offers"), {
                     title: document.getElementById('offer-title').value,
-                    price: document.getElementById('offer-price-input'] || document.getElementById('offer-price').value,
+                    price: document.getElementById('offer-price').value,
                     image: imageUrl,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
