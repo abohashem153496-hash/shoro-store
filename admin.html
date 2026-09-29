@@ -25,11 +25,11 @@
     <!-- لوحة التحكم الرئيسية -->
     <div id="admin-dashboard" class="max-w-4xl mx-auto space-y-8 hidden">
         <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية المتقدمة</h2>
+            <h2 class="text-2xl font-black text-amber-500">⚙️ لوحة التحكم السحابية السريعة</h2>
             <a href="index.html" target="_blank" class="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition">عرض الموقع 🌐</a>
         </div>
 
-        <!-- قسم 1: إضافة منتج جديد مع صورة من الجهاز -->
+        <!-- قسم 1: إضافة منتج جديد -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🍔 إضافة منتج جديد للقائمة</h3>
             <form id="add-item-form" onsubmit="addItem(event)" class="space-y-4">
@@ -53,8 +53,8 @@
                         <input type="number" id="item-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صورة المنتج (من الجهاز):</label>
-                        <input type="file" id="item-image-file" accept="image/*" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                        <label class="block text-sm font-semibold mb-1">صورة المنتج (اختياري):</label>
+                        <input type="file" id="item-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                 </div>
                 <div>
@@ -65,7 +65,7 @@
             </form>
         </div>
 
-        <!-- قسم 2: إدارة العروض مع صورة من الجهاز -->
+        <!-- قسم 2: إدارة العروض -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد وتحديد وقت انتهائه</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
@@ -81,8 +81,8 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صورة العرض (من الجهاز):</label>
-                        <input type="file" id="offer-image-file" accept="image/*" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                        <label class="block text-sm font-semibold mb-1">صورة العرض (اختياري):</label>
+                        <input type="file" id="offer-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
@@ -96,27 +96,11 @@
                 <button type="submit" id="btn-offer" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-500 transition">تفعيل العرض ونشره فوراً</button>
             </form>
         </div>
-
-        <!-- قسم 3: تحكم الصفحة الرئيسية -->
-        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🌐 إعدادات النصوص الرئيسية</h3>
-            <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
-                    <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي:</label>
-                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ إعدادات الصفحة</button>
-            </form>
-        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -141,27 +125,37 @@
             }
         }
 
-        // دالة تحويل الصورة المرفوعة من الجهاز إلى Base64 لتظهر فوراً
-        function convertImageToBase64(file) {
-            return new Promise((resolve, reject) => {
+        // ضغط حجم الصورة وتصغيرها لتطير في أجزاء من الثانية
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                if (!file) { resolve(""); return; }
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 400; // تصغير العرض لأقصى سرعة
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // ضغط الجودة لترفع فوراً
+                    };
+                };
             });
         }
 
         window.addItem = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-item');
-            btn.innerText = "جاري رفع الصورة والحفظ...";
+            btn.innerText = "جاري النشر الفوري...";
             
             try {
-                let imageUrl = "";
                 const fileInput = document.getElementById('item-image-file');
-                if (fileInput.files && fileInput.files[0]) {
-                    imageUrl = await convertImageToBase64(fileInput.files[0]);
-                }
+                let imageUrl = await compressImage(fileInput.files[0]);
 
                 await addDoc(collection(db, "menu_items"), {
                     name: document.getElementById('item-name').value,
@@ -171,7 +165,7 @@
                     desc: document.getElementById('item-desc').value,
                     createdAt: new Date()
                 });
-                alert('✅ تم إضافة المنتج وصورته وظهر في الموقع في نفس الثانية!');
+                alert('✅ تم إضافة المنتج ونشره في نفس الثانية!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
                 alert('حدث خطأ: ' + e.message);
@@ -183,42 +177,26 @@
         window.addOffer = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-offer');
-            btn.innerText = "جاري رفع الصورة وتفعيل العرض...";
+            btn.innerText = "جاري نشر العرض...";
             
             try {
-                let imageUrl = "";
                 const fileInput = document.getElementById('offer-image-file');
-                if (fileInput.files && fileInput.files[0]) {
-                    imageUrl = await convertImageToBase64(fileInput.files[0]);
-                }
+                let imageUrl = await compressImage(fileInput.files[0]);
 
                 await addDoc(collection(db, "offers"), {
                     title: document.getElementById('offer-title').value,
-                    price: document.getElementById('offer-price').value,
+                    price: document.getElementById('offer-price-input'] || document.getElementById('offer-price').value,
                     image: imageUrl,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
                     createdAt: new Date()
                 });
-                alert('🔥 تم نشر العرض بصورته وتفعيله بنجاح!');
+                alert('🔥 تم نشر العرض وتفعيله فوراً!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
                 alert('حدث خطأ: ' + e.message);
             } finally {
                 btn.innerText = "تفعيل العرض ونشره فوراً";
-            }
-        }
-
-        window.updateSettings = async function(event) {
-            event.preventDefault();
-            try {
-                await setDoc(doc(db, "settings", "main"), {
-                    heroTitle: document.getElementById('set-title').value,
-                    heroDesc: document.getElementById('set-desc').value
-                });
-                alert('✅ تم تحديث إعدادات الصفحة بنجاح!');
-            } catch(e) {
-                alert('حدث خطأ: ' + e.message);
             }
         }
     </script>
