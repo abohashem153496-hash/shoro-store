@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-browser-title">SHORO شورو - بيتزا، بروست، ومشاوي</title>
+    <title id="page-browser-title">SHORO شورو - بيتزا، بروست، مشاوي، وكريب</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link id="font-link" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style id="custom-dynamic-styles">
@@ -30,10 +30,10 @@
         <div class="max-w-xl z-10 py-10">
             <span class="bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">🔥 طعم لا يقاوم</span>
             <h1 id="hero-title" class="text-3xl md:text-6xl font-black mt-4 mb-6 leading-relaxed">قرمشة طازجة ومشوية عالفحم</h1>
-            <p id="hero-desc" class="text-zinc-300 text-base md:text-lg mb-6">استمتع بأشهى أطباق البيتزا والبروست والمشاوي المصنوعة بجودة عالية.</p>
+            <p id="hero-desc" class="text-zinc-300 text-base md:text-lg mb-6">استمتع بأشهى أطباق البيتزا والبروست والمشاوي والكريب المصنوعة بجودة عالية.</p>
             <a href="#menu" class="bg-amber-500 text-zinc-950 px-6 md:px-8 py-3 rounded-full font-bold text-base hover:bg-amber-400 transition inline-block">تصفح القائمة التفاعلية</a>
         </div>
-        <div class="hidden lg:flex justify-center items-center text-8xl animate-bounce">🍗🍕🥩</div>
+        <div class="hidden lg:flex justify-center items-center text-8xl animate-bounce">🍗🍕🌮</div>
     </section>
 
     <!-- قسم العروض -->
@@ -58,6 +58,7 @@
             <button onclick="switchCategory('pizza')" id="btn-pizza" class="px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm">🍕 البيتزا</button>
             <button onclick="switchCategory('broast')" id="btn-broast" class="px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm">🍗 البروست</button>
             <button onclick="switchCategory('grills')" id="btn-grills" class="px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm">🥩 المشاوي</button>
+            <button onclick="switchCategory('crepe')" id="btn-crepe" class="px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm">🌮 الكريب</button>
             <button onclick="switchCategory('family')" id="btn-family" class="px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm">👨‍👩‍👧‍👦 عائلية</button>
         </div>
 
@@ -65,6 +66,12 @@
             <p class="text-center col-span-2 md:col-span-3 text-zinc-500">جاري تحميل الأصناف...</p>
         </div>
     </section>
+
+    <!-- زر خدمة التوصيل الدائري العائم -->
+    <a id="floating-delivery-btn" href="#" target="_blank" class="fixed bottom-6 left-6 w-14 h-14 md:w-16 md:h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full flex flex-col items-center justify-center shadow-2xl z-50 transition transform hover:scale-110 border-2 border-white/20" title="خدمة التوصيل">
+        <span class="text-xl md:text-2xl">📞</span>
+        <span class="text-[9px] font-bold">توصيل</span>
+    </a>
 
     <!-- نافذة تكبير الصورة (Lightbox) -->
     <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
@@ -95,12 +102,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // الرقم بالصيغة الدولية المتوافقة مع مصر والسعودية
-        const PHONE_NUMBER = "201124793700";
-        document.getElementById('top-order-btn').href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('مرحباً مطعم شورو، أريد الاستفسار عن المنيو وطلب وجبة.')}`;
+        let DEFAULT_PHONE = "201124793700";
 
         let currentCategory = 'all';
-        let allProducts = { pizza: [], broast: [], grills: [], family: [] };
+        let allProducts = { pizza: [], broast: [], grills: [], crepe: [], family: [] };
         let allOffers = [];
 
         let currentLightboxImages = [];
@@ -108,7 +113,7 @@
 
         window.switchCategory = function(category) {
             currentCategory = category;
-            ['all', 'pizza', 'broast', 'grills', 'family'].forEach(cat => {
+            ['all', 'pizza', 'broast', 'grills', 'crepe', 'family'].forEach(cat => {
                 const btn = document.getElementById(`btn-${cat}`);
                 if(btn) {
                     btn.className = cat === category ? 'px-4 py-2.5 rounded-xl font-bold bg-amber-500 text-zinc-950 transition text-xs md:text-sm' : 'px-4 py-2.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition text-xs md:text-sm';
@@ -118,7 +123,7 @@
         }
 
         onValue(ref(db, 'menu_items'), (snapshot) => {
-            allProducts = { pizza: [], broast: [], grills: [], family: [] };
+            allProducts = { pizza: [], broast: [], grills: [], crepe: [], family: [] };
             const data = snapshot.val();
             if (data) {
                 Object.keys(data).forEach(key => {
@@ -155,13 +160,19 @@
                 if(s.brandName) document.getElementById('brand-title').innerText = s.brandName;
                 if(s.bgColor) document.getElementById('main-body-tag').style.backgroundColor = s.bgColor;
                 if(s.textColor) document.getElementById('main-body-tag').style.color = s.textColor;
+                
+                if(s.deliveryPhone) {
+                    DEFAULT_PHONE = s.deliveryPhone;
+                }
             }
+            document.getElementById('top-order-btn').href = `https://wa.me/${DEFAULT_PHONE}?text=${encodeURIComponent('مرحباً مطعم شورو، أريد الاستفسار عن المنيو وطلب وجبة.')}`;
+            document.getElementById('floating-delivery-btn').href = `https://wa.me/${DEFAULT_PHONE}?text=${encodeURIComponent('مرحباً، أريد التواصل مع خدمة التوصيل.')}`;
         });
 
-        window.changeImage = function(productId, direction, total, event) {
+        window.changeImage = function(prefix, id, direction, total, event) {
             event.stopPropagation();
-            const imgElement = document.getElementById(`img-${productId}`);
-            const counterElement = document.getElementById(`counter-${productId}`);
+            const imgElement = document.getElementById(`img-${prefix}-${id}`);
+            const counterElement = document.getElementById(`counter-${prefix}-${id}`);
             let currentIndex = parseInt(imgElement.getAttribute('data-index'));
             let images = JSON.parse(imgElement.getAttribute('data-images'));
 
@@ -207,7 +218,7 @@
             
             let itemsToDisplay = [];
             if (currentCategory === 'all') {
-                itemsToDisplay = [...allProducts.pizza, ...allProducts.broast, ...allProducts.grills, ...allProducts.family];
+                itemsToDisplay = [...allProducts.pizza, ...allProducts.broast, ...allProducts.grills, ...allProducts.crepe, ...allProducts.family];
             } else {
                 itemsToDisplay = allProducts[currentCategory] || [];
             }
@@ -218,19 +229,19 @@
             }
 
             itemsToDisplay.forEach(item => {
-                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد طلب الوجبة التالية:\n\n🍔 الصنف: ${item.name}\n💰 السعر: ${item.price} ر.س\n📝 الوصف: ${item.desc || 'بدون وصف'}`);
+                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد طلب الوجبة التالية:\n\n🍔 الصنف: ${item.name}\n💰 السعر: ${item.price}\n📝 الوصف: ${item.desc || 'بدون وصف'}`);
                 
                 let imagesHtml = '';
                 if (item.images && item.images.length > 0) {
                     const totalImages = item.images.length;
                     const imagesJson = JSON.stringify(item.images);
                     imagesHtml = `
-                        <div class="relative h-32 md:h-48 overflow-hidden bg-zinc-950 flex items-center justify-center group cursor-pointer" onclick='openLightbox(\`${imagesJson}\`, parseInt(document.getElementById("img-${item.id}").getAttribute("data-index")))'>
-                            <img id="img-${item.id}" data-index="0" data-images='${imagesJson}' src="${item.images[0]}" alt="${item.name}" class="w-full h-32 md:h-48 object-contain hover:scale-105 transition duration-300">
+                        <div class="relative h-32 md:h-48 overflow-hidden bg-zinc-950 flex items-center justify-center group cursor-pointer" onclick='openLightbox(\`${imagesJson}\`, parseInt(document.getElementById("img-menu-${item.id}").getAttribute("data-index")))'>
+                            <img id="img-menu-${item.id}" data-index="0" data-images='${imagesJson}' src="${item.images[0]}" alt="${item.name}" class="w-full h-32 md:h-48 object-contain hover:scale-105 transition duration-300">
                             ${totalImages > 1 ? `
-                                <button onclick="changeImage('${item.id}', -1,${totalImages}, event)" class="absolute right-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">◀</button>
-                                <button onclick="changeImage('${item.id}', 1,${totalImages}, event)" class="absolute left-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">▶</button>
-                                <span id="counter-${item.id}" class="absolute bottom-1 left-1 bg-black/80 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold">1 / ${totalImages}</span>
+                                <button onclick="changeImage('menu', '${item.id}', -1,${totalImages}, event)" class="absolute right-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">◀</button>
+                                <button onclick="changeImage('menu', '${item.id}', 1,${totalImages}, event)" class="absolute left-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">▶</button>
+                                <span id="counter-menu-${item.id}" class="absolute bottom-1 left-1 bg-black/80 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold">1 / ${totalImages}</span>
                             ` : ''}
                         </div>
                     `;
@@ -242,10 +253,10 @@
                         <div class="p-3 md:p-6 flex flex-col flex-grow">
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-1">
                                 <h3 class="text-sm md:text-xl font-bold">${item.name}</h3>
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-0.5 rounded-lg text-xs md:text-sm">${item.price} ر.س</span>
+                                <span class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-0.5 rounded-lg text-xs md:text-sm">${item.price}</span>
                             </div>
                             <p class="text-zinc-400 text-[11px] md:text-sm mb-4 flex-grow line-clamp-2">${item.desc || ''}</p>
-                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 md:py-3 rounded-lg md:rounded-xl transition text-center block text-xs md:text-sm shadow-md">اطلب الآن واتساب 📱</a>
+                            <a href="https://wa.me/${DEFAULT_PHONE}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 md:py-3 rounded-lg md:rounded-xl transition text-center block text-xs md:text-sm shadow-md">اطلب الآن واتساب 📱</a>
                         </div>
                     </div>
                 `;
@@ -261,7 +272,7 @@
             }
 
             allOffers.forEach(offer => {
-                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد الاستفادة من العرض:\n\n🔥 العرض: ${offer.title}\n💰 السعر: ${offer.price} ر.س\n📝 التفاصيل: ${offer.desc}`);
+                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد الاستفادة من العرض:\n\n🔥 العرض: ${offer.title}\n💰 السعر: ${offer.price}\n📝 التفاصيل: ${offer.desc}`);
                 
                 const endTimeMs = new Date(offer.endTime).getTime();
                 const nowMs = new Date().getTime();
@@ -269,18 +280,34 @@
                 const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
+                let offerImagesHtml = '';
+                if (offer.images && offer.images.length > 0) {
+                    const totalImages = offer.images.length;
+                    const imagesJson = JSON.stringify(offer.images);
+                    offerImagesHtml = `
+                        <div class="relative h-28 md:h-48 overflow-hidden bg-zinc-950 flex items-center justify-center rounded-lg md:rounded-xl mb-3 group cursor-pointer" onclick='openLightbox(\`${imagesJson}\`, parseInt(document.getElementById("img-offer-${offer.id}").getAttribute("data-index")))'>
+                            <img id="img-offer-${offer.id}" data-index="0" data-images='${imagesJson}' src="${offer.images[0]}" alt="${offer.title}" class="w-full h-28 md:h-48 object-contain">
+                            ${totalImages > 1 ? `
+                                <button onclick="changeImage('offer', '${offer.id}', -1,${totalImages}, event)" class="absolute right-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">◀</button>
+                                <button onclick="changeImage('offer', '${offer.id}', 1,${totalImages}, event)" class="absolute left-1 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] z-10">▶</button>
+                                <span id="counter-offer-${offer.id}" class="absolute bottom-1 left-1 bg-black/80 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold">1 / ${totalImages}</span>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
                     <div class="bg-gradient-to-br from-red-950/40 to-zinc-900 border border-red-500/40 rounded-xl md:rounded-2xl overflow-hidden shadow-xl flex flex-col p-3 md:p-6">
                         <div class="flex justify-between items-center mb-2">
                             <span class="bg-red-500 text-white text-[10px] md:text-xs px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span> ${hours}س ${minutes}د
                             </span>
-                            <span class="bg-red-500/20 text-red-400 font-black px-2 py-0.5 rounded-lg text-xs md:text-sm">${offer.price} ر.س</span>
+                            <span class="bg-red-500/20 text-red-400 font-black px-2 py-0.5 rounded-lg text-xs md:text-sm">${offer.price}</span>
                         </div>
-                        ${offer.image ? `<img src="${offer.image}" alt="${offer.title}" class="w-full h-28 md:h-48 object-contain bg-zinc-950 rounded-lg md:rounded-xl mb-3">` : ''}
+                        ${offerImagesHtml}
                         <h3 class="text-sm md:text-xl font-bold text-amber-400 mb-1">${offer.title}</h3>
                         <p class="text-zinc-300 text-[11px] md:text-sm mb-4 flex-grow line-clamp-2">${offer.desc}</p>
-                        <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 md:py-3 rounded-lg md:rounded-xl transition text-center block text-xs md:text-sm">اطلب العرض الآن 🔥</a>
+                        <a href="https://wa.me/${DEFAULT_PHONE}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 md:py-3 rounded-lg md:rounded-xl transition text-center block text-xs md:text-sm">اطلب العرض الآن 🔥</a>
                     </div>
                 `;
             });
