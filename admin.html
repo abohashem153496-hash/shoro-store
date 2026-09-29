@@ -16,7 +16,7 @@
         <form onsubmit="checkLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-semibold mb-2">كلمة المرور:</label>
-                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="كلمة المرور">
+                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="اكتب 1234">
             </div>
             <button type="submit" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">دخول</button>
         </form>
@@ -54,7 +54,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">رابط صورة المنتج (URL):</label>
-                        <input type="url" id="item-image" placeholder="https://imgur.com/... أو أي رابط صورة مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <input type="url" id="item-image" placeholder="https://... رابط صورة مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                 </div>
                 <div>
@@ -82,7 +82,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">رابط صورة العرض (URL):</label>
-                        <input type="url" id="offer-image" placeholder="https://imgur.com/... أو رابط مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <input type="url" id="offer-image" placeholder="https://... رابط مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
@@ -103,7 +103,7 @@
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">اسم المطعم (العلامة التجارية):</label>
+                        <label class="block text-sm font-semibold mb-1">اسم المطعم:</label>
                         <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
                     </div>
                     <div>
@@ -127,11 +127,11 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي في الواجهة:</label>
+                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
                     <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة، طازجة، ومشوية عالفحم!">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي بالواجهة:</label>
+                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي:</label>
                     <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا، البروست، والمشاوي المصنوعة بجودة عالية.</textarea>
                 </div>
                 <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
@@ -154,7 +154,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const ADMIN_PASS = "Ahmed123";
+        const ADMIN_PASS = "1234";
 
         window.checkLogin = function(event) {
             event.preventDefault();
@@ -163,7 +163,7 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
             } else {
-                alert('كلمة المرور غير صحيحة!');
+                alert('كلمة المرور غير صحيحة! (استخدم 1234)');
             }
         }
 
@@ -204,8 +204,6 @@
                 });
                 alert('🔥 تم نشر العرض وتفعيله في نفس الثانية!');
                 document.getElementById('add-offer-form').reset();
-            } catch(e) {
-                alert('خطأ: ' + e.message);
             } catch(e) {
                 alert('خطأ: ' + e.message);
             } finally {
