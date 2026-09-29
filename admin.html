@@ -110,32 +110,59 @@
             </div>
         </div>
 
-        <!-- 4. التحكم الشامل (أرقام التواصل والتوصيل) -->
+        <!-- 4. التحكم الشامل الكامل في الصفحة الرئيسية والهوية والألوان والخطوط والأرقام -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل وأرقام التواصل والطلبات</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل بالصفحة الرئيسية والهوية والأرقام</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">اسم المطعم:</label>
+                        <label class="block text-sm font-semibold mb-1">اسم المطعم (العلامة التجارية):</label>
                         <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رقم الطلبات الرئيسي (واتساب):</label>
-                        <input type="text" id="set-order-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
+                        <label class="block text-sm font-semibold mb-1">نوع الخط:</label>
+                        <select id="set-font" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                            <option value="Cairo">خط كايرو (Cairo)</option>
+                            <option value="Tajawal">خط تجوال (Tajawal)</option>
+                            <option value="Amiri">خط أميري (Amiri)</option>
+                            <option value="Readex Pro">خط رادكس (Readex Pro)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل (الزر الدائري):</label>
-                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
+                        <label class="block text-sm font-semibold mb-1">لون خلفية الموقع:</label>
+                        <input type="color" id="set-bgcolor" value="#09090b" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">لون النصوص:</label>
+                        <input type="color" id="set-textcolor" value="#ffffff" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">رقم الطلبات الرئيسي (واتساب):</label>
+                        <input type="text" id="set-order-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل (الزر الدائري):</label>
+                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي في الواجهة:</label>
+                    <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة طازجة ومشوية عالفحم">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">الوصف التعريفي بالواجهة:</label>
+                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا والبروست والمشاوي والكريب المصنوعة بجودة عالية.</textarea>
                 </div>
                 <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة تعديل الإعلان (مع إمكانية حذف الصور الحالية وإضافة صور جديدة) -->
+    <!-- نافذة تعديل الإعلان -->
     <div id="edit-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-700 max-w-lg w-full p-6 rounded-2xl relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold text-amber-400 mb-4">✏️ تعديل الإعلان أو العرض (حذف أو إضافة صور)</h3>
@@ -149,15 +176,10 @@
                     <label class="block text-sm font-semibold mb-1">سعر العرض:</label>
                     <input type="text" id="edit-offer-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                 </div>
-                
-                <!-- عرض الصور الحالية مع خيار الحذف -->
                 <div>
                     <label class="block text-sm font-semibold mb-2">الصور الحالية للإعلان (اضغط ❌ لحذف أي صورة):</label>
-                    <div id="current-images-container" class="flex gap-2 flex-wrap bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-2">
-                        <!-- تظهر الصور برمجياً هنا -->
-                    </div>
+                    <div id="current-images-container" class="flex gap-2 flex-wrap bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-2"></div>
                 </div>
-
                 <div>
                     <label class="block text-sm font-semibold mb-1">إضافة صور جديدة للإعلان:</label>
                     <input type="file" id="edit-offer-images" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
@@ -207,6 +229,7 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
                 loadAdminOffers();
+                loadSettingsToForm();
             } else {
                 alert('كلمة المرور غير صحيحة! (استخدم 1234)');
             }
@@ -331,6 +354,22 @@
             });
         }
 
+        function loadSettingsToForm() {
+            onValue(ref(db, 'settings'), (snapshot) => {
+                const s = snapshot.val();
+                if (s) {
+                    if(s.brandName) document.getElementById('set-brand').value = s.brandName;
+                    if(s.heroTitle) document.getElementById('set-title').value = s.heroTitle;
+                    if(s.heroDesc) document.getElementById('set-desc').value = s.heroDesc;
+                    if(s.fontFamily) document.getElementById('set-font').value = s.fontFamily;
+                    if(s.bgColor) document.getElementById('set-bgcolor').value = s.bgColor;
+                    if(s.textColor) document.getElementById('set-textcolor').value = s.textColor;
+                    if(s.orderPhone) document.getElementById('set-order-phone').value = s.orderPhone;
+                    if(s.deliveryPhone) document.getElementById('set-delivery-phone').value = s.deliveryPhone;
+                }
+            }, { onlyOnce: true });
+        }
+
         window.toggleShowAllOffers = function() {
             showAllOffersFlag = !showAllOffersFlag;
             loadAdminOffers();
@@ -421,10 +460,15 @@
             try {
                 await set(ref(db, 'settings'), {
                     brandName: document.getElementById('set-brand').value,
+                    heroTitle: document.getElementById('set-title').value,
+                    heroDesc: document.getElementById('set-desc').value,
+                    fontFamily: document.getElementById('set-font').value,
+                    bgColor: document.getElementById('set-bgcolor').value,
+                    textColor: document.getElementById('set-textcolor').value,
                     orderPhone: document.getElementById('set-order-phone').value,
                     deliveryPhone: document.getElementById('set-delivery-phone').value
                 });
-                alert('✅ تم تحديث أرقام التواصل وإعدادات المتجر فوراً!');
+                alert('✅ تم تحديث إعدادات الصفحة الرئيسية والمتجر فوراً!');
             } catch(e) {
                 alert('خطأ: ' + e.message);
             }
