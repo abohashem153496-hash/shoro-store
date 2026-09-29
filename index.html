@@ -89,7 +89,6 @@
             renderMenu();
         }
 
-        // الاستماع الفوري للتحديثات في نفس الثانية
         onSnapshot(collection(db, "menu_items"), (snapshot) => {
             allProducts = { pizza: [], broast: [], grills: [] };
             snapshot.forEach((doc) => {
@@ -133,7 +132,7 @@
             }
 
             items.forEach(item => {
-                const msg = encodeURIComponent(`مرحباً، أريد طلب الوجبة التالية:\n\n🍔 الصنف: ${item.name}\n💰 السعر: ${item.price} ر.س\n📝 الوصف: ${item.desc || 'بدون وصف'}`);
+                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد طلب الوجبة التالية:\n\n🍔 الصنف: ${item.name}\n💰 السعر: ${item.price} ر.س\n📝 الوصف: ${item.desc || 'بدون وصف'}`);
                 container.innerHTML += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition flex flex-col">
                         ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">` : ''}
@@ -154,21 +153,23 @@
             const container = document.getElementById('offers-content');
             container.innerHTML = '';
             if(allOffers.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-6 bg-zinc-900/50 rounded-2xl border border-zinc-800 text-zinc-500 font-bold">لا يوجد عروض نشطة حالياً 🛑</div>`;
+                container.innerHTML = `<div class="col-span-3 text-center py-6 bg-zinc-900/50 rounded-2xl border border-zinc-800 text-zinc-500 font-bold">لا توجد عروض نشطة حالياً 🛑</div>`;
                 return;
             }
 
             allOffers.forEach(offer => {
-                const msg = encodeURIComponent(`مرحباً، أريد الاستفادة من العرض:\n\n🔥 العرض: ${offer.title}\n💰 السعر: ${offer.price} ر.س\n📝 التفاصيل: ${offer.desc}`);
+                const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد الاستفادة من العرض:\n\n🔥 العرض: ${offer.title}\n💰 السعر: ${offer.price} ر.س\n📝 التفاصيل: ${offer.desc}`);
                 container.innerHTML += `
-                    <div class="bg-gradient-to-br from-red-950/40 to-zinc-900 border border-red-500/40 p-6 rounded-2xl shadow-xl">
-                        ${offer.image ? `<img src="${offer.image}" alt="${offer.title}" class="w-full h-40 object-cover rounded-xl mb-4">` : ''}
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-xl font-bold text-amber-400">${offer.title}</h3>
-                            <span class="bg-red-500 text-white font-black px-3 py-1 rounded-lg text-sm">${offer.price} ر.س</span>
+                    <div class="bg-gradient-to-br from-red-950/40 to-zinc-900 border border-red-500/40 rounded-2xl overflow-hidden shadow-xl flex flex-col">
+                        ${offer.image ? `<img src="${offer.image}" alt="${offer.title}" class="w-full h-48 object-cover">` : ''}
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-xl font-bold text-amber-400">${offer.title}</h3>
+                                <span class="bg-red-500 text-white font-black px-3 py-1 rounded-lg text-sm">${offer.price} ر.س</span>
+                            </div>
+                            <p class="text-zinc-300 text-sm mb-6 flex-grow">${offer.desc}</p>
+                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl transition text-center block">اطلب العرض الآن 🔥</a>
                         </div>
-                        <p class="text-zinc-300 text-sm mb-4">${offer.desc}</p>
-                        <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl transition text-center block">اطلب العرض الآن 🔥</a>
                     </div>
                 `;
             });
