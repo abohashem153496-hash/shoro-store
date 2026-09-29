@@ -29,7 +29,7 @@
             <a href="index.html" target="_blank" class="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition">عرض الموقع 🌐</a>
         </div>
 
-        <!-- قسم 1: إضافة منتج جديد -->
+        <!-- قسم 1: إضافة منتج جديد مع صورة من الجهاز -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🍔 إضافة منتج جديد للقائمة</h3>
             <form id="add-item-form" onsubmit="addItem(event)" class="space-y-4">
@@ -53,19 +53,19 @@
                         <input type="number" id="item-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رابط صورة المنتج (URL):</label>
-                        <input type="url" id="item-image" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" placeholder="https://example.com/image.jpg">
+                        <label class="block text-sm font-semibold mb-1">صورة المنتج (من الجهاز):</label>
+                        <input type="file" id="item-image-file" accept="image/*" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">وصف الصنف:</label>
                     <textarea id="item-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none"></textarea>
                 </div>
-                <button type="submit" id="btn-item" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">إضافة المنتج فوراً</button>
+                <button type="submit" id="btn-item" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">إضافة المنتج ونشره فوراً</button>
             </form>
         </div>
 
-        <!-- قسم 2: إدارة العروض -->
+        <!-- قسم 2: إدارة العروض مع صورة من الجهاز -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد وتحديد وقت انتهائه</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
@@ -81,11 +81,11 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رابط صورة العرض (URL):</label>
-                        <input type="url" id="offer-image" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">صورة العرض (من الجهاز):</label>
+                        <input type="file" id="offer-image-file" accept="image/*" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض (التاريخ والوقت):</label>
+                        <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
                         <input type="datetime-local" id="offer-time" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                 </div>
@@ -102,7 +102,7 @@
             <h3 class="text-xl font-bold text-amber-400 mb-4">🌐 إعدادات النصوص الرئيسية</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي (Hero Title):</label>
+                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
                     <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                 </div>
                 <div>
@@ -141,42 +141,66 @@
             }
         }
 
+        // دالة تحويل الصورة المرفوعة من الجهاز إلى Base64 لتظهر فوراً
+        function convertImageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         window.addItem = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-item');
-            btn.innerText = "جاري الحفظ والتحديث...";
+            btn.innerText = "جاري رفع الصورة والحفظ...";
+            
             try {
+                let imageUrl = "";
+                const fileInput = document.getElementById('item-image-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    imageUrl = await convertImageToBase64(fileInput.files[0]);
+                }
+
                 await addDoc(collection(db, "menu_items"), {
                     name: document.getElementById('item-name').value,
                     category: document.getElementById('item-category').value,
                     price: document.getElementById('item-price').value,
-                    image: document.getElementById('item-image').value,
+                    image: imageUrl,
                     desc: document.getElementById('item-desc').value,
                     createdAt: new Date()
                 });
-                alert('✅ تم إضافة المنتج وظهر في الموقع في نفس الثانية!');
+                alert('✅ تم إضافة المنتج وصورته وظهر في الموقع في نفس الثانية!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
                 alert('حدث خطأ: ' + e.message);
             } finally {
-                btn.innerText = "إضافة المنتج فوراً";
+                btn.innerText = "إضافة المنتج ونشره فوراً";
             }
         }
 
         window.addOffer = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-offer');
-            btn.innerText = "جاري تفعيل العرض...";
+            btn.innerText = "جاري رفع الصورة وتفعيل العرض...";
+            
             try {
+                let imageUrl = "";
+                const fileInput = document.getElementById('offer-image-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    imageUrl = await convertImageToBase64(fileInput.files[0]);
+                }
+
                 await addDoc(collection(db, "offers"), {
                     title: document.getElementById('offer-title').value,
                     price: document.getElementById('offer-price').value,
-                    image: document.getElementById('offer-image').value,
+                    image: imageUrl,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
                     createdAt: new Date()
                 });
-                alert('🔥 تم نشر العرض وتفعيله بنجاح!');
+                alert('🔥 تم نشر العرض بصورته وتفعيله بنجاح!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
                 alert('حدث خطأ: ' + e.message);
