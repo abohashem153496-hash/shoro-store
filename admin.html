@@ -16,7 +16,8 @@
         <form onsubmit="checkLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-semibold mb-2">كلمة المرور:</label>
-                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="اكتب 1234">
+                <!-- تم جعل الحقل مخفياً (Password) -->
+                <input type="password" id="admin-pass" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-3 focus:border-amber-500 focus:outline-none" placeholder="••••">
             </div>
             <button type="submit" class="w-full bg-amber-500 text-zinc-950 font-bold py-3 rounded-lg hover:bg-amber-400 transition">دخول</button>
         </form>
@@ -44,14 +45,15 @@
                             <option value="pizza">بيتزا</option>
                             <option value="broast">بروست</option>
                             <option value="grills">مشاوي</option>
+                            <option value="crepe">🌮 الكريب</option>
                             <option value="family">الوجبات العائلية</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">السعر (ر.س):</label>
-                        <input type="number" id="item-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">السعر (حرية الكتابة ر.س / ج.م):</label>
+                        <input type="text" id="item-price" required placeholder="مثال: 100 ر.س أو 150 ج.م" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">صور المنتج (اختر صورة أو عدة صور):</label>
@@ -66,9 +68,9 @@
             </form>
         </div>
 
-        <!-- 2. إضافة عرض جديد -->
+        <!-- 2. إضافة عرض جديد مع دعم عدة صور -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد وتحديد وقت انتهائه</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🔥 إضافة عرض جديد (يدعم عدة صور وتوقيت)</h3>
             <form id="add-offer-form" onsubmit="addOffer(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -76,14 +78,14 @@
                         <input type="text" id="offer-title" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">سعر العرض (ر.س):</label>
-                        <input type="number" id="offer-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">سعر العرض:</label>
+                        <input type="text" id="offer-price" required placeholder="مثال: 50 ر.س أو 80 ج.م" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">صورة العرض:</label>
-                        <input type="file" id="offer-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
+                        <label class="block text-sm font-semibold mb-1">صور العرض (صورة أو عدة صور):</label>
+                        <input type="file" id="offer-images-file" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
@@ -98,15 +100,21 @@
             </form>
         </div>
 
-        <!-- 3. التحكم الشامل -->
+        <!-- 3. التحكم الشامل (رقم خدمة التوصيل، الهوية، الألوان والخطوط) -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل في الهوية والألوان والخطوط</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل ورقم خدمة التوصيل</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">اسم المطعم:</label>
                         <input type="text" id="set-brand" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="SHORO شورو">
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">رقم خدمة التوصيل (بدون علامة +):</label>
+                        <input type="text" id="set-delivery-phone" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="201124793700" placeholder="مثال: 201124793700">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">نوع الخط:</label>
                         <select id="set-font" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
@@ -116,24 +124,24 @@
                             <option value="Readex Pro">خط رادكس (Readex Pro)</option>
                         </select>
                     </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">لون خلفية الموقع:</label>
                         <input type="color" id="set-bgcolor" value="#09090b" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
                     </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">لون النصوص:</label>
                         <input type="color" id="set-textcolor" value="#ffffff" class="w-full h-10 bg-zinc-950 border border-zinc-700 rounded-lg cursor-pointer">
                     </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
-                    <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة طازجة ومشوية عالفحم">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">العنوان الرئيسي:</label>
+                        <input type="text" id="set-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none" value="قرمشة طازجة ومشوية عالفحم">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">الوصف التعريفي:</label>
-                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا والبروست والمشاوي المصنوعة بجودة عالية.</textarea>
+                    <textarea id="set-desc" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">استمتع بأشهى أطباق البيتزا والبروست والمشاوي والكريب المصنوعة بجودة عالية.</textarea>
                 </div>
                 <button type="submit" id="btn-settings" class="w-full bg-zinc-800 text-white font-bold py-3 rounded-lg hover:bg-zinc-700 transition">حفظ وتطبيق التعديلات فوراً</button>
             </form>
@@ -220,14 +228,21 @@
             btn.innerText = "جاري نشر العرض...";
             
             try {
-                const fileInput = document.getElementById('offer-image-file');
-                let imageUrl = await readFileAsBase64(fileInput.files[0]);
+                const fileInput = document.getElementById('offer-images-file');
+                let imageUrls = [];
+                
+                if (fileInput.files.length > 0) {
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        let base64Img = await readFileAsBase64(fileInput.files[i]);
+                        if(base64Img) imageUrls.push(base64Img);
+                    }
+                }
 
                 const newRef = push(ref(db, 'offers'));
                 await set(newRef, {
                     title: document.getElementById('offer-title').value,
                     price: document.getElementById('offer-price').value,
-                    image: imageUrl,
+                    images: imageUrls,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
                     createdAt: Date.now()
@@ -249,6 +264,7 @@
             try {
                 await set(ref(db, 'settings'), {
                     brandName: document.getElementById('set-brand').value,
+                    deliveryPhone: document.getElementById('set-delivery-phone').value,
                     heroTitle: document.getElementById('set-title').value,
                     heroDesc: document.getElementById('set-desc').value,
                     fontFamily: document.getElementById('set-font').value,
