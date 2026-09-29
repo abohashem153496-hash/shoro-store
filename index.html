@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHORO | شورو - بيتزا، بروست، ومشاوي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-zinc-950 text-white">
+
+    <header class="flex justify-between items-center px-8 py-6 border-b border-zinc-800">
+        <div class="text-2xl font-black text-amber-500 tracking-wider">SHORO <span class="text-white text-sm font-normal">| شورو</span></div>
+        <nav class="hidden md:flex gap-8 text-sm font-semibold">
+            <a href="#home" class="hover:text-amber-500 transition">الرئيسية</a>
+            <a href="#menu" class="hover:text-amber-500 transition">قائمة الوجبات</a>
+        </nav>
+        <button class="bg-amber-500 text-zinc-950 px-6 py-2 rounded-full font-bold hover:bg-amber-400 transition">اطلب الآن</button>
+    </header>
+
+    <section id="home" class="relative min-h-[70vh] flex items-center justify-between px-8 md:px-20 bg-gradient-to-r from-red-950 via-zinc-900 to-zinc-950">
+        <div class="max-w-xl z-10">
+            <span class="bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">🔥 طعم لا يقاوم</span>
+            <h1 class="text-4xl md:text-6xl font-black mt-4 mb-6 leading-tight">قرمشة، طازجة، <br><span class="text-amber-500">ومشوية عالفحم!</span></h1>
+            <p class="text-zinc-300 text-lg mb-8">استمتع بأشهى أطباق البيتزا، البروست، والمشاوي المصنوعة بجودة عالية.</p>
+            <a href="#menu" class="bg-amber-500 text-zinc-950 px-8 py-3 rounded-full font-bold text-lg hover:bg-amber-400 transition inline-block">تصفح القائمة التفاعلية</a>
+        </div>
+        <div class="hidden lg:flex justify-center items-center text-8xl animate-bounce">🍗🍕🥩</div>
+    </section>
+
+    <section id="menu" class="py-20 px-8 md:px-20 bg-zinc-900/50">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-black text-amber-500">اختر وجبتك المفضلة</h2>
+            <p class="text-zinc-400 mt-2">تتحدث مباشرة من لوحة التحكم السحابية</p>
+        </div>
+
+        <div class="flex justify-center gap-4 mb-10 flex-wrap">
+            <button onclick="switchCategory('pizza')" id="btn-pizza" class="px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition">🍕 البيتزا</button>
+            <button onclick="switchCategory('broast')" id="btn-broast" class="px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition">🍗 البروست</button>
+            <button onclick="switchCategory('grills')" id="btn-grills" class="px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition">🥩 المشاوي</button>
+        </div>
+
+        <div id="menu-content" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <p class="text-center col-span-3 text-zinc-500">جاري تحميل الأصناف...</p>
+        </div>
+    </section>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentCategory = 'pizza';
+        let allProducts = { pizza: [], broast: [], grills: [] };
+
+        window.switchCategory = function(category) {
+            currentCategory = category;
+            document.getElementById('btn-pizza').className = category === 'pizza' ? 'px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition' : 'px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition';
+            document.getElementById('btn-broast').className = category === 'broast' ? 'px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition' : 'px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition';
+            document.getElementById('btn-grills').className = category === 'grills' ? 'px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition' : 'px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition';
+            renderMenu();
+        }
+
+        async function fetchMenuItems() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "menu_items"));
+                allProducts = { pizza: [], broast: [], grills: [] };
+                
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    if (allProducts[item.category]) {
+                        allProducts[item.category].push({ id: doc.id, ...item });
+                    }
+                });
+                renderMenu();
+            } catch (error) {
+                console.error("خطأ في جلب البيانات: ", error);
+            }
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menu-content');
+            container.innerHTML = '';
+            
+            const items = allProducts[currentCategory] || [];
+            if(items.length === 0) {
+                container.innerHTML = `<p class="text-center col-span-3 text-zinc-500">لا توجد أصناف مضافة في هذا القسم حالياً.</p>`;
+                return;
+            }
+
+            items.forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl hover:border-amber-500/50 transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold">${item.name}</h3>
+                            <span class="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg">${item.price} ر.س</span>
+                        </div>
+                        <p class="text-zinc-400 text-sm mb-6">${item.desc}</p>
+                        <button class="w-full bg-zinc-800 hover:bg-amber-500 hover:text-zinc-950 font-bold py-2 rounded-xl transition">أضف للسلة</button>
+                    </div>
+                `;
+            });
+        }
+
+        fetchMenuItems();
+    </script>
+</body>
+</html>
