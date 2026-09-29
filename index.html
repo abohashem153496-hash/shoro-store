@@ -25,18 +25,18 @@
         <a href="#menu" class="bg-amber-500 text-zinc-950 px-6 py-2 rounded-full font-bold hover:bg-amber-400 transition">اطلب الآن</a>
     </header>
 
-    <!-- الواجهة الرئيسية -->
+    <!-- الواجهة الرئيسية (بدون فواصل) -->
     <section id="home" class="relative min-h-[60vh] flex items-center justify-between px-8 md:px-20 bg-gradient-to-r from-red-950 via-zinc-900 to-zinc-950">
         <div class="max-w-xl z-10">
             <span class="bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">🔥 طعم لا يقاوم</span>
-            <h1 id="hero-title" class="text-4xl md:text-6xl font-black mt-6 mb-8 leading-relaxed">قرمشة، طازجة، ومشوية عالفحم!</h1>
-            <p id="hero-desc" class="text-zinc-300 text-lg mb-8 mt-4">استمتع بأشهى أطباق البيتزا، البروست، والمشاوي المصنوعة بجودة عالية.</p>
+            <h1 id="hero-title" class="text-4xl md:text-6xl font-black mt-6 mb-8 leading-relaxed">قرمشة طازجة ومشوية عالفحم</h1>
+            <p id="hero-desc" class="text-zinc-300 text-lg mb-8 mt-4">استمتع بأشهى أطباق البيتزا والبروست والمشاوي المصنوعة بجودة عالية.</p>
             <a href="#menu" class="bg-amber-500 text-zinc-950 px-8 py-3 rounded-full font-bold text-lg hover:bg-amber-400 transition inline-block">تصفح القائمة التفاعلية</a>
         </div>
         <div class="hidden lg:flex justify-center items-center text-8xl animate-bounce">🍗🍕🥩</div>
     </section>
 
-    <!-- قسم العروض مع التايمر وشارة عرض الآن -->
+    <!-- قسم العروض مع التايمر -->
     <section id="offers" class="py-16 px-8 md:px-20 bg-zinc-900/30 border-y border-zinc-800">
         <div class="flex items-center justify-center gap-3 mb-10">
             <span class="w-4 h-4 bg-red-500 rounded-full animate-pulse"></span>
@@ -47,14 +47,14 @@
         </div>
     </section>
 
-    <!-- قائمة الوجبات (تضم جميع الأقسام للرئيسية، أو مقسمة) -->
+    <!-- قائمة الوجبات والأقسام -->
     <section id="menu" class="py-20 px-8 md:px-20 bg-zinc-900/50">
         <div class="text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-black text-amber-500">قائمة الوجبات والأقسام</h2>
         </div>
 
         <div class="flex justify-center gap-4 mb-10 flex-wrap">
-            <button onclick="switchCategory('all')" id="btn-all" class="px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition">🌐 كل الوجبات (الرئيسية)</button>
+            <button onclick="switchCategory('all')" id="btn-all" class="px-6 py-3 rounded-xl font-bold bg-amber-500 text-zinc-950 transition">🏠 الصفحة الرئيسية (الكل)</button>
             <button onclick="switchCategory('pizza')" id="btn-pizza" class="px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition">🍕 البيتزا</button>
             <button onclick="switchCategory('broast')" id="btn-broast" class="px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition">🍗 البروست</button>
             <button onclick="switchCategory('grills')" id="btn-grills" class="px-6 py-3 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition">🥩 المشاوي</button>
@@ -64,6 +64,18 @@
             <p class="text-center col-span-3 text-zinc-500">جاري تحميل الأصناف...</p>
         </div>
     </section>
+
+    <!-- نافذة تكبير الصورة (Lightbox) -->
+    <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-6 left-6 text-white text-3xl font-bold bg-zinc-800 px-4 py-1 rounded-full hover:bg-zinc-700">✕</button>
+        <div class="relative max-w-3xl w-full flex flex-col items-center">
+            <img id="lightbox-img" src="" class="max-h-[80vh] object-contain rounded-xl shadow-2xl">
+            <div id="lightbox-controls" class="flex gap-4 mt-6 hidden">
+                <button onclick="lightboxMove(-1)" class="bg-amber-500 text-zinc-950 font-bold px-6 py-2 rounded-xl">◀ السابق</button>
+                <button onclick="lightboxMove(1)" class="bg-amber-500 text-zinc-950 font-bold px-6 py-2 rounded-xl">التالي ▶</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -86,6 +98,10 @@
         let currentCategory = 'all';
         let allProducts = { pizza: [], broast: [], grills: [] };
         let allOffers = [];
+
+        // متغيرات نافذة تكبير الصور
+        let currentLightboxImages = [];
+        let currentLightboxIndex = 0;
 
         window.switchCategory = function(category) {
             currentCategory = category;
@@ -139,8 +155,9 @@
             }
         });
 
-        // دالة التنقل بين صور المنتج الواحد عبر الأسهم
-        window.changeImage = function(productId, direction, total) {
+        // دالة التنقل المصغر بالبطاقة
+        window.changeImage = function(productId, direction, total, event) {
+            event.stopPropagation();
             const imgElement = document.getElementById(`img-${productId}`);
             const counterElement = document.getElementById(`counter-${productId}`);
             let currentIndex = parseInt(imgElement.getAttribute('data-index'));
@@ -153,6 +170,34 @@
             imgElement.src = images[currentIndex];
             imgElement.setAttribute('data-index', currentIndex);
             if(counterElement) counterElement.innerText = `${currentIndex + 1} / ${total}`;
+        }
+
+        // فتح الصورة بالضغط عليها للتكبير
+        window.openLightbox = function(imagesStr, index) {
+            currentLightboxImages = JSON.parse(imagesStr);
+            currentLightboxIndex = index;
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const controls = document.getElementById('lightbox-controls');
+
+            lightboxImg.src = currentLightboxImages[currentLightboxIndex];
+            lightbox.style.display = 'flex';
+            if (currentLightboxImages.length > 1) {
+                controls.style.display = 'flex';
+            } else {
+                controls.style.display = 'none';
+            }
+        }
+
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        window.lightboxMove = function(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxImages.length - 1;
+            if (currentLightboxIndex >= currentLightboxImages.length) currentLightboxIndex = 0;
+            document.getElementById('lightbox-img').src = currentLightboxImages[currentLightboxIndex];
         }
 
         function renderMenu() {
@@ -177,14 +222,16 @@
                 let imagesHtml = '';
                 if (item.images && item.images.length > 0) {
                     const totalImages = item.images.length;
+                    const imagesJson = JSON.stringify(item.images);
                     imagesHtml = `
-                        <div class="relative h-40 overflow-hidden bg-zinc-950 flex items-center justify-center group">
-                            <img id="img-${item.id}" data-index="0" data-images='${JSON.stringify(item.images)}' src="${item.images[0]}" alt="${item.name}" class="w-full h-40 object-contain cursor-pointer hover:scale-105 transition">
+                        <div class="relative h-48 overflow-hidden bg-zinc-950 flex items-center justify-center group cursor-pointer" onclick='openLightbox(\`${imagesJson}\`, parseInt(document.getElementById("img-${item.id}").getAttribute("data-index")))'>
+                            <img id="img-${item.id}" data-index="0" data-images='${imagesJson}' src="${item.images[0]}" alt="${item.name}" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
                             ${totalImages > 1 ? `
-                                <button onclick="changeImage('${item.id}', -1,${totalImages})" class="absolute right-2 bg-black/60 hover:bg-black text-white px-2 py-1 rounded-full text-xs">◀</button>
-                                <button onclick="changeImage('${item.id}', 1,${totalImages})" class="absolute left-2 bg-black/60 hover:bg-black text-white px-2 py-1 rounded-full text-xs">▶</button>
-                                <span id="counter-${item.id}" class="absolute bottom-2 left-2 bg-black/70 text-amber-400 text-[10px] px-2 py-0.5 rounded font-bold">1 / ${totalImages}</span>
+                                <button onclick="changeImage('${item.id}', -1,${totalImages}, event)" class="absolute right-2 bg-black/70 hover:bg-black text-white px-2.5 py-1 rounded-full text-xs z-10">◀</button>
+                                <button onclick="changeImage('${item.id}', 1,${totalImages}, event)" class="absolute left-2 bg-black/70 hover:bg-black text-white px-2.5 py-1 rounded-full text-xs z-10">▶</button>
+                                <span id="counter-${item.id}" class="absolute bottom-2 left-2 bg-black/80 text-amber-400 text-xs px-2 py-0.5 rounded font-bold">1 / ${totalImages}</span>
                             ` : ''}
+                            <span class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded">🔍 اضغط للتكبير</span>
                         </div>
                     `;
                 }
@@ -192,13 +239,13 @@
                 container.innerHTML += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition flex flex-col shadow-xl">
                         ${imagesHtml}
-                        <div class="p-5 flex flex-col flex-grow">
+                        <div class="p-6 flex flex-col flex-grow">
                             <div class="flex justify-between items-start mb-3">
-                                <h3 class="text-lg font-bold">${item.name}</h3>
+                                <h3 class="text-xl font-bold">${item.name}</h3>
                                 <span class="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg text-sm">${item.price} ر.س</span>
                             </div>
-                            <p class="text-zinc-400 text-xs mb-4 flex-grow">${item.desc || ''}</p>
-                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition text-center block text-sm">اطلب الآن واتساب 📱</a>
+                            <p class="text-zinc-400 text-sm mb-6 flex-grow">${item.desc || ''}</p>
+                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-center block text-sm shadow-md">اطلب الآن واتساب 📱</a>
                         </div>
                     </div>
                 `;
@@ -216,7 +263,6 @@
             allOffers.forEach(offer => {
                 const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد الاستفادة من العرض:\n\n🔥 العرض: ${offer.title}\n💰 السعر: ${offer.price} ر.س\n📝 التفاصيل: ${offer.desc}`);
                 
-                // حساب التايمر التنازلي للوقت المتبقي
                 const endTimeMs = new Date(offer.endTime).getTime();
                 const nowMs = new Date().getTime();
                 const timeLeft = Math.max(0, endTimeMs - nowMs);
@@ -224,17 +270,17 @@
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
                 container.innerHTML += `
-                    <div class="bg-gradient-to-br from-red-950/40 to-zinc-900 border border-red-500/40 rounded-2xl overflow-hidden shadow-xl flex flex-col p-5">
+                    <div class="bg-gradient-to-br from-red-950/40 to-zinc-900 border border-red-500/40 rounded-2xl overflow-hidden shadow-xl flex flex-col p-6">
                         <div class="flex justify-between items-center mb-3">
-                            <span class="bg-red-500 text-white text-[11px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                            <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow">
                                 <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> ينتهي خلال: ${hours}س ${minutes}د
                             </span>
                             <span class="bg-red-500/20 text-red-400 font-black px-3 py-1 rounded-lg text-sm">${offer.price} ر.س</span>
                         </div>
-                        ${offer.image ? `<img src="${offer.image}" alt="${offer.title}" class="w-full h-36 object-cover rounded-xl mb-3">` : ''}
+                        ${offer.image ? `<img src="${offer.image}" alt="${offer.title}" class="w-full h-48 object-cover rounded-xl mb-4 shadow-md">` : ''}
                         <h3 class="text-xl font-bold text-amber-400 mb-2">${offer.title}</h3>
-                        <p class="text-zinc-300 text-xs mb-4 flex-grow">${offer.desc}</p>
-                        <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl transition text-center block text-sm">اطلب العرض الآن 🔥</a>
+                        <p class="text-zinc-300 text-sm mb-6 flex-grow">${offer.desc}</p>
+                        <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl transition text-center block shadow">اطلب العرض الآن 🔥</a>
                     </div>
                 `;
             });
