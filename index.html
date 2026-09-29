@@ -61,19 +61,20 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            authDomain: "car-orders.firebaseapp.com",
+            databaseURL: "https://car-orders-default-rtdb.firebaseio.com",
+            projectId: "car-orders",
+            storageBucket: "car-orders.appspot.com",
             messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
         const PHONE_NUMBER = "01124793700";
 
         let currentCategory = 'pizza';
@@ -91,34 +92,42 @@
             renderMenu();
         }
 
-        onSnapshot(collection(db, "menu_items"), (snapshot) => {
+        // قراءة الوجبات فوراً
+        onValue(ref(db, 'menu_items'), (snapshot) => {
             allProducts = { pizza: [], broast: [], grills: [] };
-            snapshot.forEach((doc) => {
-                const item = doc.data();
-                if (allProducts[item.category]) {
-                    allProducts[item.category].push({ id: doc.id, ...item });
-                }
-            });
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    if (allProducts[item.category]) {
+                        allProducts[item.category].push({ id: key, ...item });
+                    }
+                });
+            }
             renderMenu();
         });
 
-        onSnapshot(collection(db, "offers"), (snapshot) => {
+        // قراءة العروض فوراً
+        onValue(ref(db, 'offers'), (snapshot) => {
             allOffers = [];
+            const data = snapshot.val();
             const now = new Date();
-            snapshot.forEach((doc) => {
-                const offer = doc.data();
-                const endTime = new Date(offer.endTime);
-                if (endTime > now) {
-                    allOffers.push({ id: doc.id, ...offer });
-                }
-            });
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const offer = data[key];
+                    const endTime = new Date(offer.endTime);
+                    if (endTime > now) {
+                        allOffers.push({ id: key, ...offer });
+                    }
+                });
+            }
             renderOffers();
         });
 
-        // الاستماع الفوري لإعدادات التصميم والعنوان واللون
-        onSnapshot(doc(db, "settings", "main"), (docSnap) => {
-            if (docSnap.exists()) {
-                const s = docSnap.data();
+        // قراءة إعدادات التصميم والألوان والعناوين فوراً
+        onValue(ref(db, 'settings'), (snapshot) => {
+            const s = snapshot.val();
+            if (s) {
                 if(s.heroTitle) document.getElementById('hero-title').innerText = s.heroTitle;
                 if(s.heroDesc) document.getElementById('hero-desc').innerText = s.heroDesc;
                 if(s.brandName) document.getElementById('brand-title').innerText = s.brandName;
@@ -142,16 +151,27 @@
 
             items.forEach(item => {
                 const msg = encodeURIComponent(`مرحباً مطعم شورو، أريد طلب الوجبة التالية:\n\n🍔 الصنف: ${item.name}\n💰 السعر: ${item.price} ر.س\n📝 الوصف: ${item.desc || 'بدون وصف'}`);
+                
+                let imagesHtml = '';
+                if (item.images && item.images.length > 0) {
+                    imagesHtml = `
+                        <div class="relative h-48 overflow-hidden bg-zinc-950">
+                            <img src="${item.images[0]}" alt="${item.name}" class="w-full h-48 object-cover">
+                            ${item.images.length > 1 ? `<span class="absolute bottom-2 left-2 bg-black/80 text-amber-400 text-xs px-2.5 py-1 rounded-md font-bold border border-amber-500/30">📸 ${item.images.length} صور</span>` : ''}
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
-                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition flex flex-col">
-                        ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">` : ''}
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition flex flex-col shadow-xl">
+                        ${imagesHtml}
                         <div class="p-6 flex flex-col flex-grow">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-xl font-bold">${item.name}</h3>
                                 <span class="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg">${item.price} ر.س</span>
                             </div>
                             <p class="text-zinc-400 text-sm mb-6 flex-grow">${item.desc || ''}</p>
-                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-center block">اطلب الآن واتساب 📱</a>
+                            <a href="https://wa.me/${PHONE_NUMBER}?text=${msg}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-center block shadow-lg">اطلب الآن واتساب 📱</a>
                         </div>
                     </div>
                 `;
