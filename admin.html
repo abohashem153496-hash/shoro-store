@@ -29,9 +29,9 @@
             <a href="index.html" target="_blank" class="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition">عرض الموقع 🌐</a>
         </div>
 
-        <!-- 1. إضافة منتج جديد -->
+        <!-- 1. إضافة منتج جديد مع دعم رفع عدة صور -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold text-amber-400 mb-4">🍔 إضافة منتج جديد للقائمة</h3>
+            <h3 class="text-xl font-bold text-amber-400 mb-4">🍔 إضافة منتج جديد (مع إمكانية رفع عدة صور)</h3>
             <form id="add-item-form" onsubmit="addItem(event)" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -53,8 +53,8 @@
                         <input type="number" id="item-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رابط صورة المنتج (URL):</label>
-                        <input type="url" id="item-image" placeholder="https://... رابط صورة مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">صور المنتج (اختر صورة أو عدة صور):</label>
+                        <input type="file" id="item-images-file" accept="image/*" multiple class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-amber-500 file:text-zinc-950 file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                 </div>
                 <div>
@@ -81,8 +81,8 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">رابط صورة العرض (URL):</label>
-                        <input type="url" id="offer-image" placeholder="https://... رابط مباشر" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 focus:border-amber-500 focus:outline-none">
+                        <label class="block text-sm font-semibold mb-1">صورة العرض:</label>
+                        <input type="file" id="offer-image-file" accept="image/*" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm file:bg-red-500 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1 file:font-bold">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">وقت انتهاء العرض:</label>
@@ -97,7 +97,7 @@
             </form>
         </div>
 
-        <!-- 3. التحكم الشامل في العناوين، الألوان والخطوط -->
+        <!-- 3. التحكم الشامل في الهوية والألوان والخطوط -->
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
             <h3 class="text-xl font-bold text-amber-400 mb-4">🎨 التحكم الشامل في الهوية والخطوط والألوان</h3>
             <form id="settings-form" onsubmit="updateSettings(event)" class="space-y-4">
@@ -141,19 +141,20 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            authDomain: "car-orders.firebaseapp.com",
+            databaseURL: "https://car-orders-default-rtdb.firebaseio.com",
+            projectId: "car-orders",
+            storageBucket: "car-orders.appspot.com",
             messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
         const ADMIN_PASS = "1234";
 
         window.checkLogin = function(event) {
@@ -167,23 +168,47 @@
             }
         }
 
+        // قراءة الصور مباشرة وبسرعة فائقة بدون ضغط معقد
+        function readFileAsBase64(file) {
+            return new Promise((resolve) => {
+                if (!file) { resolve(""); return; }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => resolve(event.target.result);
+                reader.onerror = () => resolve("");
+            });
+        }
+
         window.addItem = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-item');
-            btn.innerText = "جاري النشر...";
+            btn.innerText = "جاري النشر الفوري...";
+            
             try {
-                await addDoc(collection(db, "menu_items"), {
+                const fileInput = document.getElementById('item-images-file');
+                let imageUrls = [];
+                
+                if (fileInput.files.length > 0) {
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        let base64Img = await readFileAsBase64(fileInput.files[i]);
+                        if(base64Img) imageUrls.push(base64Img);
+                    }
+                }
+
+                const newRef = push(ref(db, 'menu_items'));
+                await set(newRef, {
                     name: document.getElementById('item-name').value,
                     category: document.getElementById('item-category').value,
                     price: document.getElementById('item-price').value,
-                    image: document.getElementById('item-image').value,
+                    images: imageUrls,
                     desc: document.getElementById('item-desc').value,
-                    createdAt: new Date()
+                    createdAt: Date.now()
                 });
-                alert('✅ تم نشر المنتج في نفس الثانية!');
+
+                alert('✅ تم نشر المنتج وصوره في نفس الثانية!');
                 document.getElementById('add-item-form').reset();
             } catch(e) {
-                alert('خطأ: ' + e.message);
+                alert('خطأ أثناء النشر: ' + e.message);
             } finally {
                 btn.innerText = "إضافة ونشر المنتج فوراً";
             }
@@ -192,20 +217,26 @@
         window.addOffer = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-offer');
-            btn.innerText = "جاري النشر...";
+            btn.innerText = "جاري نشر العرض...";
+            
             try {
-                await addDoc(collection(db, "offers"), {
+                const fileInput = document.getElementById('offer-image-file');
+                let imageUrl = await readFileAsBase64(fileInput.files[0]);
+
+                const newRef = push(ref(db, 'offers'));
+                await set(newRef, {
                     title: document.getElementById('offer-title').value,
                     price: document.getElementById('offer-price').value,
-                    image: document.getElementById('offer-image').value,
+                    image: imageUrl,
                     endTime: document.getElementById('offer-time').value,
                     desc: document.getElementById('offer-desc').value,
-                    createdAt: new Date()
+                    createdAt: Date.now()
                 });
-                alert('🔥 تم نشر العرض وتفعيله في نفس الثانية!');
+
+                alert('🔥 تم نشر العرض وتفعيله فوراً!');
                 document.getElementById('add-offer-form').reset();
             } catch(e) {
-                alert('خطأ: ' + e.message);
+                alert('خطأ أثناء النشر: ' + e.message);
             } finally {
                 btn.innerText = "تفعيل ونشر العرض فوراً";
             }
@@ -214,9 +245,9 @@
         window.updateSettings = async function(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-settings');
-            btn.innerText = "جاري الحفظ...";
+            btn.innerText = "جاري الحفظ والتطبيق...";
             try {
-                await setDoc(doc(db, "settings", "main"), {
+                await set(ref(db, 'settings'), {
                     brandName: document.getElementById('set-brand').value,
                     heroTitle: document.getElementById('set-title').value,
                     heroDesc: document.getElementById('set-desc').value,
@@ -224,7 +255,7 @@
                     bgColor: document.getElementById('set-bgcolor').value,
                     textColor: document.getElementById('set-textcolor').value
                 });
-                alert('✅ تم تحديث تصميم وإعدادات الموقع فوراً!');
+                alert('✅ تم تطبيق التعديلات وتحديث الموقع فوراً!');
             } catch(e) {
                 alert('خطأ: ' + e.message);
             } finally {
